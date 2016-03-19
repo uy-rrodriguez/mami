@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<data>
+    <server>
+        <name>lynx</name>
+        <ip>192.168.10.223</ip>
+        <uptime>2 hours 25 min</uptime>
+    </server>
+    <servers>
+        <server>
+            <name>server1</name>
+            <ip>0.0.0.0</ip>
+            <uptime>00 hours 00 min</uptime>
+        </server>
+        <server>
+            <name>server2</name>
+            <ip>127.0.0.1</ip>
+            <uptime>10 hours 00 min</uptime>
+        </server>
+    </servers>
+    <cpu>
+        <used>25,3%</used>
+    </cpu>
+    <ram>
+        <used>2400000</used>
+        <total>4500000</total>
+    </ram>
+    <disks/>
+    <users>
+        <user>
+            <name>James</name>
+            <uid>20</uid>
+            <groupid>25</groupid>
+            <isroot>true</isroot>
+            <gname>root</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Rutherford</name>
+            <uid>21</uid>
+            <groupid>20</groupid>
+            <isroot>false</isroot>
+            <gname>root</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Bill</name>
+            <uid>22</uid>
+            <groupid>21</groupid>
+            <isroot>true</isroot>
+            <gname>root</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Dwight</name>
+            <uid>23</uid>
+            <groupid>30</groupid>
+            <isroot>true</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Thomas</name>
+            <uid>24</uid>
+            <groupid>27</groupid>
+            <isroot>true</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Herbert</name>
+            <uid>25</uid>
+            <groupid>20</groupid>
+            <isroot>false</isroot>
+            <gname>etd</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Ronald</name>
+            <uid>26</uid>
+            <groupid>24</groupid>
+            <isroot>false</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Chester</name>
+            <uid>27</uid>
+            <groupid>29</groupid>
+            <isroot>false</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Rutherford</name>
+            <uid>28</uid>
+            <groupid>30</groupid>
+            <isroot>false</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+        <user>
+            <name>Franklin</name>
+            <uid>29</uid>
+            <groupid>20</groupid>
+            <isroot>true</isroot>
+            <gname>user</gname>
+            <logintime>2016-03-18 20:25:34</logintime>
+        </user>
+    </users>
+    <swap>
+        <used>224</used>
+        <total>204000</total>
+    </swap>
+    <processes>
+        <count>10</count>
+        <zombies>1</zombies>
+        <greedy>
+            <process>
+                <pid>1542</pid>
+                <cpu>35 %</cpu>
+                <ram>234 MB</ram>
+                <command>firefox</command>
+            </process>
+        </greedy>
+    </processes>
+</data>
