@@ -25,5 +25,8 @@ class ArrayDataObject(BaseObject):
     def __setattr__(self, att, value):
         ArrayDataObject.data[id(self)][att] = value
 
+    def __str__(self):
+        return str(ArrayDataObject.data[id(self)])
+
     def __del__(self):
         del ArrayDataObject.data[id(self)]
