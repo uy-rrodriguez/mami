@@ -37,11 +37,11 @@ def main():
 
     print "Test parseObjetXML"
     s = Server()
-    s.parseObjetXML(xml, "./server", ["name", "ip", "uptime"])
+    s.parse_objet_xml(xml, "./server", ["name", "ip", "uptime"])
     print s.name, " ", s.ip, " ", s.uptime
 
     print "\nTest parseListXML"
-    liste = Server.parseListXML(Server, xml, "./servers", ["name", "ip", "uptime"])
+    liste = Server.parse_list_xml(xml, "./servers", ["name", "ip", "uptime"])
     for serv in liste:
         print serv.name, " ", serv.ip, " ", serv.uptime
 
@@ -49,14 +49,14 @@ def main():
     s.name = "Autre nom de serveur"
     s.ip = "xxx.xxx.xxx.yyy"
     s.uptime = "00 heures 00 minutes"
-    print s.writeObjetXML(xml, "./server", ["name", "ip", "uptime"])
+    print s.write_objet_xml(xml, "./server", ["name", "ip", "uptime"])
 
     print "\nTest writeListXML"
     for serv in liste:
         serv.name += "-MODIF"
         serv.ip += ":255"
         serv.uptime += " 20 seconds"
-    print Server.writeListXML(liste, xml, "./servers", ["name", "ip", "uptime"])
+    print Server.write_list_xml(liste, xml, "./servers", ["name", "ip", "uptime"])
 
 if __name__=="__main__":
     main()

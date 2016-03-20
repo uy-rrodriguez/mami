@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <cpu>
+        <used>29.3</used>
+    </cpu>
+    <ram>
+        <used>3.58 GB</used>
+        <total>3.79 GB</total>
+    </ram>
+    <swap>
+        <used>12 MB</used>
+        <total>1022 MB</total>
+    </swap>
+    <server>
+        <name>Ricci-Linux</name>
+        <ip>192.168.0.35</ip>
+        <uptime>top - 19:18:10 up 1 day, 44 min,  3 users,  load average: 0,90, 0,69, 0,67</uptime>
+    </server>
+    <disks>
+        <disk>
+            <mnt>/</mnt>
+            <used>10.02 GB</used>
+            <total>19.56 GB</total>
+        </disk>
+        <disk>
+            <mnt>/media/ricardo/12926750112F1409</mnt>
+            <used>184.92 GB</used>
+            <total>195.0 GB</total>
+        </disk>
+        <disk>
+            <mnt>/home</mnt>
+            <used>10.66 GB</used>
+            <total>44.17 GB</total>
+        </disk>
+    </disks>
+    <users>
+        <user>
+            <uid>1000</uid>
+            <name>ricardo</name>
+            <isroot>1</isroot>
+            <login_time>2016-03-19 18:33</login_time>
+        </user>
+        <user>
+            <uid>21000</uid>
+            <name>2ricardo</name>
+            <isroot>1</isroot>
+            <login_time>2016-03-19 18:33</login_time>
+        </user>
+    </users>
+    <processes>
+        <process>
+            <pid>22220</pid>
+            <command>firefox</command>
+            <username>ricardo</username>
+            <cpu>47.6</cpu>
+            <ram>674930688</ram>
+        </process>
+        <process>
+            <pid>1326</pid>
+            <command>Xorg</command>
+            <username>root</username>
+            <cpu>16.7</cpu>
+            <ram>193196032</ram>
+        </process>
+        <process>
+            <pid>2059</pid>
+            <command>compiz</command>
+            <username>ricardo</username>
+            <cpu>10.5</cpu>
+            <ram>307556352</ram>
+        </process>
+        <process>
+            <pid>8547</pid>
+            <command>plugin-container</command>
+            <username>ricardo</username>
+            <cpu>1.2</cpu>
+            <ram>75796480</ram>
+        </process>
+        <process>
+            <pid>8784</pid>
+            <command>python</command>
+            <username>ricardo</username>
+            <cpu>3.5</cpu>
+            <ram>17625088</ram>
+        </process>
+        <process>
+            <pid>22119</pid>
+            <command>LightTable</command>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>149934080</ram>
+        </process>
+        <process>
+            <pid>22110</pid>
+            <command>LightTable</command>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>105140224</ram>
+        </process>
+        <process>
+            <pid>22577</pid>
+            <command>update-manager</command>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>119291904</ram>
+        </process>
+        <process>
+            <pid>22693</pid>
+            <command>/usr/bin/x-term</command>
+            <username>ricardo</username>
+            <cpu>2.3</cpu>
+            <ram>58507264</ram>
+        </process>
+        <process>
+            <pid>1341</pid>
+            <command>teamviewerd</command>
+            <username>root</username>
+            <cpu>0.3</cpu>
+            <ram>16482304</ram>
+        </process>
+    </processes>
+</data>

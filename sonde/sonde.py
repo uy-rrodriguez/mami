@@ -76,7 +76,17 @@ from operator import attrgetter
 #sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from util import util
-from objets import cpu, disk, process, ram, server, swap, user
+from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
+
+
+
+#############################################################################
+#    Constantes.                                                            #
+#############################################################################
+
+MAX_GREEDY = 10
+SLEEP_TIME = 3
+
 
 
 #############################################################################
@@ -85,7 +95,6 @@ from objets import cpu, disk, process, ram, server, swap, user
 
 
 class Sonde(object):
-    MAX_GREEDY = 10
 
     def __init__(self):
         self.cpu = cpu.CPU()
@@ -99,6 +108,8 @@ class Sonde(object):
 
         self.count_processes = 0
         self.count_zombies = 0
+
+        self.firstLoop = True
 
 
     def get_cpu_info(self):
@@ -174,9 +185,7 @@ class Sonde(object):
         output = output.split("\n")[:-1]
 
         for line in output:
-            print line
             data = line.split("|")
-            print data
             u = user.User()
             u.uid = data[0]
             u.name = data[1]
@@ -185,20 +194,7 @@ class Sonde(object):
             self.users.append(u)
 
 
-    def collect(self):
-        self.get_cpu_info()
-        self.get_ram_info()
-        self.get_server_info()
-        self.get_swap_info()
-
-        self.get_disks_info()
-
-        self.get_processes_info()
-        self.processes.sort(reverse=True)
-        self.processes = self.processes[:Sonde.MAX_GREEDY]
-
-        self.get_users_info()
-
+    def print_info(self):
         print "CPU: ", self.cpu
         print "RAM: ", self.ram
         print "Server: ", self.server
@@ -219,6 +215,54 @@ class Sonde(object):
             print u
 
 
+    def collect(self):
+        self.get_cpu_info()
+        self.get_ram_info()
+        self.get_server_info()
+        self.get_swap_info()
+        self.get_disks_info()
+        self.get_users_info()
+
+        # On obtient tous les processus et on garde les 10 premiers
+        # si c'est la premiere fois qu'on boucle, on obtient deux fois l'info des processus,
+        # parce que le pourcentage de CPU du premier passage n'est pas valide
+        if self.firstLoop:
+            self.firstLoop = False
+            self.get_processes_info()
+
+        self.get_processes_info()
+        self.processes.sort(reverse=True)
+        self.processes = self.processes[:MAX_GREEDY]
+
+        # Ecriture du fichier XML
+        baseXML = path.dirname(path.abspath(__file__)) + "/base.xml"
+        fBase = open(baseXML, "r")
+        firstLine = fBase.readline()
+        xml = fBase.read()
+        fBase.close()
+
+        timestamp = ""#time.strftime("%Y%m%d_%H%M%s", time.localtime())
+        outXML = path.dirname(path.abspath(__file__)) + "/data_" + timestamp + ".xml"
+        fOut = open(outXML, "w")
+
+        xml = self.cpu.write_objet_xml(xml, "./cpu", ["used"])
+        xml = self.ram.write_objet_xml(xml, "./ram", ["used", "total"])
+        xml = self.swap.write_objet_xml(xml, "./swap", ["used", "total"])
+        xml = self.server.write_objet_xml(xml, "./server", ["name", "ip", "uptime"])
+        xml = disk.Disk.write_list_xml(self.disks, xml, "./disks", ["mnt", "used", "total"])
+        xml = user.User.write_list_xml(self.users, xml, "./users", ["uid", "name", "isroot", "login_time"])
+
+        pseudoProcess = arraydataobject.ArrayDataObject()
+        pseudoProcess.count = self.count_processes
+        pseudoProcess.zombies = self.count_zombies
+        xml = pseudoProcess.write_objet_xml(xml, "./processes", ["count", "zombies"])
+        xml = process.Process.write_list_xml(self.processes, xml, "./processes", ["pid", "command", "username", "cpu", "ram"])
+
+        fOut.write(firstLine)
+        fOut.write(xml)
+        fOut.close()
+
+
 
 #############################################################################
 #    Main pour tester le module.                                            #
@@ -228,7 +272,7 @@ def main():
     s = Sonde()
     while True:
         s.collect()
-        time.sleep(3)
+        time.sleep(SLEEP_TIME)
 
 if __name__=='__main__':
     main()

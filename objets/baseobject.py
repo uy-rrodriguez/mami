@@ -22,48 +22,71 @@ class BaseObject(object):
     def __init__(self):
         pass
 
-    def parseObjetXML(self, stringXML, path, attribs):
+    def parse_objet_xml(self, stringXML, path, attribs):
         root = ET.fromstring(stringXML)
         child = root.find(path)
         for att in attribs:
             setattr(self, att, child.find(att).text)
 
 
-    def writeObjetXML(self, stringXML, path, attribs):
-        root = ET.fromstring(stringXML)
-        child = root.find(path)
-        for att in attribs:
-            child.find(att).text = getattr(self, att)
-        return ET.tostring(root)
-
-
-    @staticmethod
-    def parseListXML(baseClass, stringXML, path, attribs):
+    @classmethod
+    def parse_list_xml(cls, stringXML, path, attribs):
         result = []
         root = ET.fromstring(stringXML)
         rootList = root.find(path)
         for child in rootList:
-            obj = baseClass()
+            obj = cls()
             result.append(obj)
             for att in attribs:
                 setattr(obj, att, child.find(att).text)
         return result
 
 
-    @staticmethod
-    def writeListXML(listObj, stringXML, path, attribs):
+    def write_objet_xml(self, stringXML, path, attribs):
         root = ET.fromstring(stringXML)
-        rootList = root.find(path)
+        child = find_or_create_element(root, path)
+        for att in attribs:
+            attributElement = find_or_create_element(child, att)
+            attributElement.text = str(getattr(self, att))
+
+        indent(root)
+        return ET.tostring(root)
+
+
+    @classmethod
+    def write_list_xml(cls, listObj, stringXML, path, attribs):
+        root = ET.fromstring(stringXML)
+        rootList = find_or_create_element(root, path)
         rootList.clear()
 
         for obj in listObj:
             child = ET.SubElement(rootList, obj.__class__.__name__.lower())
             for att in attribs:
                 subelement = ET.SubElement(child, att)
-                subelement.text = getattr(obj, att)
+                subelement.text = str(getattr(obj, att))
 
         indent(root)
         return ET.tostring(root)
+
+
+
+#############################################################################
+#    Fonctions utiles pour modifier un texte XML.                           #
+#############################################################################
+
+'''
+    Cree toute une branche a partir du chemin donne et retourne le dernier fils
+'''
+def find_or_create_element(root, path):
+    child = None
+    parent = root
+    parts = path.split("/")
+    for part in parts:
+        child = parent.find(part)
+        if child == None:
+            child = ET.SubElement(parent, part)
+        parent = child
+    return child
 
 
 def indent(elem, level=0):
@@ -80,11 +103,3 @@ def indent(elem, level=0):
     else:
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
-
-
-
-
-
-
-
-

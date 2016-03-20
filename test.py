@@ -24,41 +24,41 @@ def main():
 
     print "Test serveur:"
     s = Server()
-    s.parseObjetXML(xml, "./server", ["name", "ip", "uptime"])
+    s.parse_objet_xml(xml, "./server", ["name", "ip", "uptime"])
     print s.name, " ", s.ip, " ", s.uptime
 
     print "Test CPU:"
     c = CPU()
-    c.parseObjetXML(xml, "./cpu", ["used"])
+    c.parse_objet_xml(xml, "./cpu", ["used"])
     print c.used
 
     print "Test RAM:"
     ram = ArrayDataObject()
-    ram.parseObjetXML(xml, "./ram", ["used", "total"])
+    ram.parse_objet_xml(xml, "./ram", ["used", "total"])
     print ram.used, " ", ram.total, " ", int(ram.used) * 100 / int(ram.total), "%"
 
     print "\nTest disques"
-    disques = ArrayDataObject.parseListXML(ArrayDataObject, xml, "./disks", ["used", "total"])
+    disques = ArrayDataObject.parse_list_xml(xml, "./disks", ["used", "total"])
     for d in disques:
         print d.used, " ", d.total
 
     print "\nTest utilisateurs"
-    users = User.parseListXML(User, xml, "./users", ["name", "uid", "groupid", "isroot", "gname", "logintime"])
+    users = User.parse_list_xml(xml, "./users", ["name", "uid", "groupid", "isroot", "gname", "logintime"])
     for d in users:
         print d.name, " ", d.uid, " ", d.groupid, " ", d.isroot, " ", d.gname, " ", d.logintime
 
     print "\nTest swap"
     swap = Swap()
-    swap.parseObjetXML(xml, "./swap", ["used", "total"])
+    swap.parse_objet_xml(xml, "./swap", ["used", "total"])
     print swap.used, " ", swap.total
 
     print "\nTest processus"
     proc = Process()
-    proc.parseObjetXML(xml, "./processes", ["count", "zombies"])
+    proc.parse_objet_xml(xml, "./processes", ["count", "zombies"])
     print proc.count, " ", proc.zombies
 
     print "\nTest greedy"
-    greedies = Process.parseListXML(Process, xml, "./processes/greedy", ["pid", "cpu", "ram", "command"])
+    greedies = Process.parse_list_xml(xml, "./processes/greedy", ["pid", "cpu", "ram", "command"])
     for g in greedies:
         print g.pid, " ", g.cpu, " ", g.ram, " ", g.command
 
