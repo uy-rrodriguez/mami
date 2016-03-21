@@ -175,9 +175,14 @@ class Sonde(object):
         self.get_disks_info()
         self.get_users_info()
 
-        # On obtient tous les processus et on garde les 10 premiers
-        # si c'est la premiere fois qu'on boucle, on obtient deux fois l'info des processus,
-        # parce que le pourcentage de CPU du premier passage n'est pas valide
+        # On obtient tous les processus et on garde les 10 premiers.
+        # Si c'est la première fois qu'on boucle, on obtient deux fois l'info des processus.
+        # À cause du fonctionnement de psutils concernant l'obtention des pourcentages
+        # d'utilisation du CPU, il est nécéssaire de faire ainsi pour récupérer une valeur
+        # valide.
+        #
+        # Pour plus d'informations, http://pythonhosted.org/psutil/#psutil.Process.cpu_percent
+        #
         if self.firstLoop:
             self.firstLoop = False
             self.get_processes_info()
