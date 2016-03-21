@@ -1,5 +1,5 @@
 # mami
- MAMI (Monitoring Application Made Ici)
+MAMI (Monitoring Application Made Ici)
 
 <img src="https://github.com/uy-rrodriguez/mami/blob/master/mami.png" height="350px" alt="logo mami"/>
 
