@@ -21,49 +21,57 @@ donné, pendant que Process stocke les 10 processus les plus gourmands.
 
 
 ### Server
-```
-+  name      VARCHAR(50)   PRIMARY KEY
-+  ip        VARCHAR(15)
-+  uptime    VARCHAR(10)
-```
+|Nom             |Type          |Clé  primaire|
+|----------------|--------------|-------------|
+|name            |VARCHAR(50)   |PRIMARY KEY  |
+|ip              |VARCHAR(15)   |             |
+|uptime          |VARCHAR(10)   |             |
+
 ### Stat
-+  server_name       VARCHAR(50)   PRIMARY KEY
-+  date              DATE          PRIMARY KEY
-+  cpu_used          FLOAT
-+  ram_used          INT
-+  ram_total         INT
-+  swap_int          INT
-+  swap_total        INT
-+  processes_count   INT
-+  zombies_count     INT
-+  users_count       INT
-+  FOREIGN KEY server_name REFERENCES (Server.name)
+|Nom             |Type          |Clé  primaire|
+|----------------|--------------|-------------|
+|server_name     |VARCHAR(50)   |PRIMARY KEY  |
+|date            |DATE          |PRIMARY KEY  |
+|cpu_used        |FLOAT         |             |
+|ram_used        |INT           |             |
+|ram_total       |INT           |             |
+|swap_int        |INT           |             |
+|swap_total      |INT           |             |
+|processes_count |INT           |             |
+|zombies_count   |INT           |             |
+|users_count     |INT           |             |
+FOREIGN KEY server_name REFERENCES (Server.name)
 
 ### StatDisk
-
-+  server_name   VARCHAR(50)   PRIMARY KEY
-+  date          DATE          PRIMARY KEY
-+  mnt           VARCHAR(20)   PRIMARY KEY
-+  used          INT
-+  total         INT
+|Nom             |Type          |Clé  primaire|
+|----------------|--------------|-------------|
+|server_name     |VARCHAR(50)   |PRIMARY KEY  |
+|date            |DATE          |PRIMARY KEY  |
+|mnt             |VARCHAR(20)   |PRIMARY KEY  |
+|used            |INT           |             |
+|total           |INT           |             |
 +  FOREIGN KEY server_name REFERENCES (Stats.server_name)
 +  FOREIGN KEY date REFERENCES (Stats.date)
 
 ### User
-+  server_name   VARCHAR(50)   PRIMARY KEY
-+  uid           INT           PRIMARY KEY
-+  name          VARCHAR(20)
-+  isroot        BOOLEAN
-+  login_time    DATE
+|Nom             |Type          |Clé  primaire|
+|----------------|--------------|-------------|
+|server_name     |VARCHAR(50)   |PRIMARY KEY  |
+|uid             |INT           |PRIMARY KEY  |
+|name            |VARCHAR(20)   |             |
+|isroot          |BOOLEAN       |             |
+|login_time      |DATE          |             |
 +  FOREIGN KEY server_name REFERENCES (Server.server_name)
 
 ### Process
-+  server_name   VARCHAR(50)   PRIMARY KEY
-+  pid           INT           PRIMARY KEY
-+  command       VARCHAR(200)
-+  username      VARCHAR(20)
-+  cpu           FLOAT
-+  ram           INT
+|Nom             |Type          |Clé  primaire|
+|----------------|--------------|-------------|
+|server_name     |VARCHAR(50)   |PRIMARY KEY  |
+|pid             |INT           |PRIMARY KEY  |
+|command         |VARCHAR(200)  |             |
+|username        |VARCHAR(20)   |             |
+|cpu             |FLOAT         |             |
+|ram             |INT           |             |
 +  FOREIGN KEY server_name REFERENCES (Server.server_name)
 
 
