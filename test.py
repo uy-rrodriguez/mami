@@ -19,7 +19,7 @@ from objets.user import *
 
 
 def main():
-    f = open('test.xml', 'r')
+    f = open("data/test.xml", "r")
     xml = f.read()
 
     print "Test serveur:"

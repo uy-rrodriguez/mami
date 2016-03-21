@@ -13,59 +13,6 @@
 #                                                                           #
 #############################################################################
 
-'''
-    FORMAT XML
-    -------------------------------------------------------------------------
-    <data timestamp=”timestamp_unix”>
-        <server>
-            <name></name>
-            <ip></ip>
-            <uptime></uptime>
-        </server>
-        <cpu>
-                <used></used>
-        </cpu>
-        <ram>
-            <total></total>
-            <used></used>
-        </ram>
-        <disks>
-            <disk>
-                <mnt></mnt>
-                <total></total>
-                <used></used>
-            </disk>
-        <disks>
-        <swap>
-            <total></total>
-            <used></used>
-        </swap>
-        <users>
-            <user>
-                <name></name>
-                <uid></uid>
-                <gid></gid>
-                <isroot></isroot>
-                <gname></gname>
-                <login_time></login_time>
-            </user>
-        </users>
-        <processes>
-                <count></count>
-                <zombies></zombies>
-            <greedy>
-                <process>
-                    <pid></pid>
-                    <username></username>
-                    <cpu></cpu>
-                    <ram></ram>
-                    <command></command>
-                </process>
-            </greedy>
-        </processes>
-    </data>
-'''
-
 import psutil
 import time
 from datetime import datetime
@@ -86,6 +33,11 @@ from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
 
 MAX_GREEDY = 10
 SLEEP_TIME = 3
+
+# Path et nom de base pour le fichier à générer, par rapport à l'addresse de
+# ce fichier. Après le nom du fichier on ajoutera un suffix (genre, le nom
+# du serveur et le timestamp) plus l'extension xml.
+PATH_OUTPUT = "/../data/data_"
 
 
 
@@ -113,19 +65,19 @@ class Sonde(object):
 
 
     def get_cpu_info(self):
-        self.cpu.used = psutil.cpu_percent(0.1, percpu=False)
+        self.cpu.used = psutil.cpu_percent(1, percpu=False)
 
 
     def get_ram_info(self):
         data = psutil.virtual_memory()
-        self.ram.used = util.stringify_bytes(data.used)
-        self.ram.total = util.stringify_bytes(data.total)
+        self.ram.used = data.used
+        self.ram.total = data.total
 
 
     def get_swap_info(self):
         data = psutil.swap_memory()
-        self.swap.used = util.stringify_bytes(data.used)
-        self.swap.total = util.stringify_bytes(data.total)
+        self.swap.used = data.used
+        self.swap.total = data.total
 
 
     def get_server_info(self):
@@ -143,8 +95,8 @@ class Sonde(object):
             data = psutil.disk_usage(part.mountpoint)
             d = disk.Disk()
             d.mnt = part.mountpoint
-            d.total = util.stringify_bytes(data.total)
-            d.used = util.stringify_bytes(data.used)
+            d.total = data.total
+            d.used = data.used
             self.disks.append(d)
 
 
@@ -181,7 +133,7 @@ class Sonde(object):
         script = path.dirname(path.abspath(__file__)) + "/get_user_info.sh"
         output = subprocess.check_output(["sh", script])
 
-        # On cree un tableeau a partir de la reponse, et on supprime le dernier element (un ligne vide)
+        # On cree un tableau a partir de la reponse, et on supprime le dernier element (un ligne vide)
         output = output.split("\n")[:-1]
 
         for line in output:
@@ -241,8 +193,9 @@ class Sonde(object):
         xml = fBase.read()
         fBase.close()
 
-        timestamp = ""#time.strftime("%Y%m%d_%H%M%s", time.localtime())
-        outXML = path.dirname(path.abspath(__file__)) + "/data_" + timestamp + ".xml"
+        timestamp = "" #time.strftime("%Y%m%d_%H%M%s", time.localtime())
+        suffix = "" #self.server.name + "_" + timestamp
+        outXML = path.dirname(path.abspath(__file__)) + PATH_OUTPUT + suffix + ".xml"
         fOut = open(outXML, "w")
 
         xml = self.cpu.write_objet_xml(xml, "./cpu", ["used"])

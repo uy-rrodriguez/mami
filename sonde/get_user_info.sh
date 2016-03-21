@@ -12,13 +12,13 @@ do
 
     # Verifier si l'utilisateur peut gagner les droits de root
     isroot=0
-    for gr in $(groups ricardo | sed "s/^\w* : //")
+    for gr in $(groups $name | sed "s/^\w* : //")
     do
-        if [ "$gr"=="root" ] || \
-           [ "$gr"=="adm" ] || \
-           [ "$gr"=="admin" ] || \
-           [ "$gr"=="sudo" ] || \
-           [ "$gr"=="wheel" ]
+        if [ "$gr" = "root" ] || \
+           [ "$gr" = "adm" ] || \
+           [ "$gr" = "admin" ] || \
+           [ "$gr" = "sudo" ] || \
+           [ "$gr" = "wheel" ]
         then
             isroot=1
             break
@@ -26,5 +26,5 @@ do
     done
 
     echo "$uid|$name|$isroot|$login_date $login_time"
-    echo "2$uid|2$name|$isroot|$login_date $login_time"
+    #echo "2$uid|2$name|$isroot|$login_date $login_time"
 done
