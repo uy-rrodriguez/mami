@@ -1,6 +1,11 @@
 # mami
 MAMI (Monitoring Application Made Ici)
 
+<img src="https://github.com/uy-rrodriguez/mami/blob/master/mami.png" height="350px" alt="logo mami"/>
+
+_http://www.clipartlord.com/2015/02/10/free-cute-cartoon-granny-clip-art/_
+
+--------------------------------------------------------------------------------
 
 # Stockage de données
 ## Base de données
@@ -20,14 +25,17 @@ supprimées. User stocke les utilisateurs connectés sur une machine à un insta
 donné, pendant que Process stocke les 10 processus les plus gourmands.
 
 
-### Server
+### Server #####################################################################
+
 |Nom             |Type          |Clé  primaire|
 |----------------|--------------|-------------|
 |name            |VARCHAR(50)   |PRIMARY KEY  |
 |ip              |VARCHAR(15)   |             |
 |uptime          |VARCHAR(10)   |             |
 
-### Stat
+
+### Stat #######################################################################
+
 |Nom             |Type          |Clé  primaire|
 |----------------|--------------|-------------|
 |server_name     |VARCHAR(50)   |PRIMARY KEY  |
@@ -40,9 +48,12 @@ donné, pendant que Process stocke les 10 processus les plus gourmands.
 |processes_count |INT           |             |
 |zombies_count   |INT           |             |
 |users_count     |INT           |             |
-FOREIGN KEY server_name REFERENCES (Server.name)
 
-### StatDisk
+* FOREIGN KEY server_name REFERENCES (Server.name)
+
+
+### StatDisk ###################################################################
+
 |Nom             |Type          |Clé  primaire|
 |----------------|--------------|-------------|
 |server_name     |VARCHAR(50)   |PRIMARY KEY  |
@@ -50,10 +61,13 @@ FOREIGN KEY server_name REFERENCES (Server.name)
 |mnt             |VARCHAR(20)   |PRIMARY KEY  |
 |used            |INT           |             |
 |total           |INT           |             |
-+  FOREIGN KEY server_name REFERENCES (Stats.server_name)
-+  FOREIGN KEY date REFERENCES (Stats.date)
 
-### User
+* FOREIGN KEY server_name REFERENCES (Stats.server_name)
+* FOREIGN KEY date REFERENCES (Stats.date)
+
+
+### User #######################################################################
+
 |Nom             |Type          |Clé  primaire|
 |----------------|--------------|-------------|
 |server_name     |VARCHAR(50)   |PRIMARY KEY  |
@@ -61,9 +75,12 @@ FOREIGN KEY server_name REFERENCES (Server.name)
 |name            |VARCHAR(20)   |             |
 |isroot          |BOOLEAN       |             |
 |login_time      |DATE          |             |
-+  FOREIGN KEY server_name REFERENCES (Server.server_name)
 
-### Process
+* FOREIGN KEY server_name REFERENCES (Server.server_name)
+
+
+### Process ####################################################################
+
 |Nom             |Type          |Clé  primaire|
 |----------------|--------------|-------------|
 |server_name     |VARCHAR(50)   |PRIMARY KEY  |
@@ -72,15 +89,15 @@ FOREIGN KEY server_name REFERENCES (Server.name)
 |username        |VARCHAR(20)   |             |
 |cpu             |FLOAT         |             |
 |ram             |INT           |             |
-+  FOREIGN KEY server_name REFERENCES (Server.server_name)
+
+* FOREIGN KEY server_name REFERENCES (Server.server_name)
 
 
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 
 
 
 
-<img src="https://github.com/uy-rrodriguez/mami/blob/master/mami.png" height="350px" alt="logo mami"/>
-<div style="font-size:9px;">http://www.clipartlord.com/2015/02/10/free-cute-cartoon-granny-clip-art/</div>
+
