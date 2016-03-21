@@ -21,10 +21,11 @@ donné, pendant que Process stocke les 10 processus les plus gourmands.
 
 
 ### Server
+```
 +  name      VARCHAR(50)   PRIMARY KEY
 +  ip        VARCHAR(15)
 +  uptime    VARCHAR(10)
-
+```
 ### Stat
 +  server_name       VARCHAR(50)   PRIMARY KEY
 +  date              DATE          PRIMARY KEY
