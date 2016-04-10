@@ -13,154 +13,91 @@
 #                                                                           #
 #############################################################################
 
-import sqlite3
-import pygal
-from datetime import datetime
+import curses
+from windowmenu import WindowMenu
+from windowstats import WindowStats
 
 
 #############################################################################
 #    Interface. Classe principale du module.                                #
 #############################################################################
 
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+Y = 0
+X = 1
+KEY_QUIT = ord("q")
+KEY_CHANGE_WIN = 9    # TAB
 
 
 class Interface:
     def __init__(self):
-        self.fileName = "chart.svg"
-        self.browser = True
+        self.init_curse()
+        self.dims = self.stdscr.getmaxyx()
+        h = self.dims[Y]/2
+        w = self.dims[X]/2
+        self.menu = WindowMenu(     self, self.stdscr, h-1, w-1, 0, 0, "interface.xml" )
+        self.stats = WindowStats(   self, self.stdscr, h-1, w-1, 0, w )
+        #self.procs = WindowProcess( self.stdscr, h-1, w-1, h, w )
+        #self.windows = [self.menu, self.stats, self.procs]
+        self.windows = [self.menu, self.stats]
+        self.focused = 0
+        self.menu.focus()
 
-        # Connexion BD
-        self.conn = sqlite3.connect("../data/sonde_info.db")
-        self.conn.row_factory = dict_factory
-        self.cursor = self.conn.cursor()
+    def end(self):
+        self.end_curse()
 
-        self.cursor.execute("SELECT name, ip, uptime FROM server")
-        servers = self.cursor.fetchall()
+    def init_curse(self):
+        self.stdscr = curses.initscr()     # Init curses
+        self.stdscr.keypad(1)              # Enable keypad mode (handle keys with curses.KEY_LEFT, etc).
+        self.stdscr.nodelay(True)
+        curses.start_color()               # Enable colors
+        curses.noecho()                    # Disable echoing keys
+        curses.cbreak()                    # React to keys instantly, without waiting for Enter
+        curses.curs_set(0)                 # Disable cursor
 
-        for s in servers:
-            print s["name"]
-            #self.render_cpu_ram_chart(s["name"])
-            #self.render_users_process_chart(s["name"])
-            self.render_disks_use_chart(s["name"])
-            #self.render_single_disk_chart(dates)
+    def end_curse(self):
+        self.stdscr.keypad(0);
+        curses.echo()
+        curses.nocbreak();
+        curses.curs_set(1)
+        curses.endwin()                    # Restore the terminal to its original operating mode
 
-        dates = [
-                datetime(2013, 1, 2, 12, 0),
-                datetime(2013, 1, 12, 14, 30, 45),
-                datetime(2013, 2, 2, 6),
-                datetime(2013, 2, 22, 9, 45)
-                ]
+    def handle_keys(self):
+        k = self.stdscr.getch()
 
+        # After reading one character, we discard the rest of the line
+        try: self.stdscr.getstr()
+        except: pass
 
-    def date_formatter(self, dt):
-        return dt.strftime("%d-%m-%Y %H:%M:%S")
+        if k == KEY_QUIT:
+            return False
 
-    def save_or_display_chart(self, chart):
-        if (self.browser == True):
-            chart.render_in_browser()
+        elif k == KEY_CHANGE_WIN:
+            self.windows[self.focused].unfocus()
+            self.focused = (self.focused + 1) % len(self.windows)
+            self.windows[self.focused].focus()
         else:
-            chart.render_to_file(self.fileName)
+            self.windows[self.focused].handle_key(k)
 
-    def render_time_chart(self, title, dates=[], linesInfo={}):
-        chart = pygal.Line(x_label_rotation=20)
-        chart.title = title
-        #chart.x_labels = map(self.date_formatter, dates)
-        chart.x_labels = dates
-        for label in linesInfo:
-            chart.add(label, linesInfo[label])
-        self.save_or_display_chart(chart)
+        return True
 
-    def render_cpu_ram_chart(self, server):
-        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
-                               FROM stat
-                               WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
-        dates, cpu, ram, swap = [], [], [], []
+    def update(self):
+        for w in self.windows:
+            w.update()
 
-        for line in info:
-            dates.append(line["date"])
-            cpu.append(line["cpu_used"])
-            ram.append(line["ram_used"] * 100 / line["ram_total"])
-            swap.append(line["swap_used"] * 100 / line["swap_total"])
+    def render(self):
+        for w in self.windows:
+            w.render()
 
-        self.fileName = "cpu_ram.svg"
-        self.render_time_chart("Utilisation de CPU, RAM et Swap (%)",
-                               dates,
-                               {"CPU": cpu, "RAM": ram, "Swap": swap})
-
-    def render_users_process_chart(self, server):
-        self.cursor.execute("""SELECT date, users_count, processes_count, zombies_count
-                               FROM stat
-                               WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
-        dates, users, procs, zombies = [], [], [], []
-
-        for line in info:
-            dates.append(line["date"])
-            users.append(line["users_count"])
-            procs.append(line["processes_count"])
-            zombies.append(line["zombies_count"])
-
-        self.fileName = "users_procs.svg"
-        self.render_time_chart("Nombre d'utilisateurs et processus", dates,
-                          {"Utilisateurs": users, "Processus": procs, "Zombies": zombies})
-
-    def render_disks_use_chart(self, server):
-        self.cursor.execute("""SELECT DISTINCT(date)
-                               FROM stat
-                               WHERE server_name LIKE ?""", [server])
-        dates = [ res["date"] for res in self.cursor.fetchall() ]
-
-        self.cursor.execute("""SELECT DISTINCT(mnt)
-                               FROM statDisk
-                               WHERE server_name LIKE ?""", [server])
-        disks = [ res["mnt"] for res in self.cursor.fetchall() ]
-        infoDisks = {}
-
-        for disk in disks:
-            self.cursor.execute("""SELECT stat.date, used, total
-                                   FROM stat
-                                       LEFT OUTER JOIN statDisk USING (server_name, date)
-                                   WHERE server_name = ? AND mnt = ?""",
-                                   [server, disk])
-            info = self.cursor.fetchall()
-            print disk
-            print info
-
-            infoDisks[disk] = []
-
-            for line in info:
-                if (line["used"] == ""):
-                    infoDisks[disk].append(0)
-                else:
-                    infoDisks[disk].append(line["used"] * 100 / line["total"])
-
-
-        self.fileName = "disks_use.svg"
-        self.render_time_chart("Utilisation des disques (%)", dates, infoDisks)
-
-    def render_single_disk_chart(self, dates = []):
-        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
-                               FROM stat
-                               WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
-
-        dates, cpu, ram, swap = [], [], [], []
-
-        for line in info:
-            dates.append(line["date"])
-            cpu.append(line["cpu_used"])
-            ram.append(line["ram_used"] * 100 / line["ram_total"])
-            swap.append(line["swap_used"] * 100 / line["swap_total"])
-        self.fileName = "single_disk.svg"
-        self.render_time_chart("Utilisation d'un seul disk (GB)", dates,
-                          {mount: used})
+    def run(self):
+        try:
+            while True:
+                self.update()
+                self.render()
+                curses.napms(50)
+                if not self.handle_keys():
+                    break
+        finally:
+            self.end()
 
 
 
@@ -169,7 +106,14 @@ class Interface:
 #############################################################################
 
 def main():
-    Interface()
+    try:
+        i = Interface()
+        i.run()
+    finally:
+        curses.echo()
+        curses.nocbreak();
+        curses.curs_set(1)
+        curses.endwin()
 
 if __name__=='__main__':
     main()
