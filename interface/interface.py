@@ -33,23 +33,22 @@ def dict_factory(cursor, row):
 class Interface:
     def __init__(self):
         self.fileName = "chart.svg"
-        self.browser = False
+        self.browser = True
 
         # Connexion BD
         self.conn = sqlite3.connect("../data/sonde_info.db")
         self.conn.row_factory = dict_factory
-        self.c = self.conn.cursor()
+        self.cursor = self.conn.cursor()
 
-        self.c.execute("SELECT name, ip, uptime FROM server")
-        servers = self.c.fetchall()
+        self.cursor.execute("SELECT name, ip, uptime FROM server")
+        servers = self.cursor.fetchall()
 
         for s in servers:
             print s["name"]
-            self.c.execute("""SELECT cpu_used, ram_used, ram_total, swap_used, swap_total
-                              FROM stat
-                              WHERE server_name LIKE ?""", [s["name"]])
-            info_CPU_RAM = self.c.fetchall()
-            print info_CPU_RAM
+            #self.render_cpu_ram_chart(s["name"])
+            #self.render_users_process_chart(s["name"])
+            self.render_disks_use_chart(s["name"])
+            #self.render_single_disk_chart(dates)
 
         dates = [
                 datetime(2013, 1, 2, 12, 0),
@@ -57,71 +56,111 @@ class Interface:
                 datetime(2013, 2, 2, 6),
                 datetime(2013, 2, 22, 9, 45)
                 ]
-        cpu = [5, 30, 18, 1]
-        ram = [20, 80, 50, 15]
-        swap = [2, 15, 5, 0]
-        self.fileName = "cpu_ram.svg"
-        self.render_cpu_ram_chart(dates, cpu, ram, swap)
-
-        users = [2, 3, 1, 5]
-        procs = [6, 10, 2, 20]
-        zombies = [0, 0, 1, 1]
-        self.fileName = "users_procs.svg"
-        self.render_users_process_chart(dates, users, procs, zombies)
-
-        disksUse = {}
-        disksUse["sda0"] = [30, 31, 40, 29]
-        disksUse["sda1"] = [10, 9, 15, 35]
-        self.fileName = "disks_use.svg"
-        self.render_disks_use_chart(dates, disksUse)
-
-        useDisk0 = [15, 18, 30, 12]
-        self.fileName = "single_disk.svg"
-        self.render_single_disk_chart("GB sda0", dates, useDisk0)
 
 
     def date_formatter(self, dt):
         return dt.strftime("%d-%m-%Y %H:%M:%S")
 
-    def render_chart(self, chart):
+    def save_or_display_chart(self, chart):
         if (self.browser == True):
             chart.render_in_browser()
         else:
             chart.render_to_file(self.fileName)
 
-
-    def render_cpu_ram_chart(self, dates = [], cpu = [], ram = [], swap = []):
+    def render_time_chart(self, title, dates=[], linesInfo={}):
         chart = pygal.Line(x_label_rotation=20)
-        chart.title = "Utilisation de CPU, RAM et Swap (%)"
-        chart.x_labels = map(self.date_formatter, dates)
-        chart.add("CPU", cpu)
-        chart.add("RAM", ram)
-        chart.add("Swap", swap)
-        self.render_chart(chart)
+        chart.title = title
+        #chart.x_labels = map(self.date_formatter, dates)
+        chart.x_labels = dates
+        for label in linesInfo:
+            chart.add(label, linesInfo[label])
+        self.save_or_display_chart(chart)
 
-    def render_users_process_chart(self, dates = [], users = [], procs = [], zombies = []):
-        chart = pygal.Line(x_label_rotation=20)
-        chart.title = "Nombre d'utilisateurs et processus"
-        chart.x_labels = map(self.date_formatter, dates)
-        chart.add("Utilisateurs", users)
-        chart.add("Processus", procs)
-        chart.add("Zombies", zombies)
-        self.render_chart(chart)
+    def render_cpu_ram_chart(self, server):
+        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+                               FROM stat
+                               WHERE server_name LIKE ?""", [server])
+        info = self.cursor.fetchall()
+        dates, cpu, ram, swap = [], [], [], []
 
-    def render_disks_use_chart(self, dates = [], disksInfo = {}):
-        chart = pygal.Line(x_label_rotation=20)
-        chart.title = "Utilisation des disques (%)"
-        chart.x_labels = map(self.date_formatter, dates)
-        for disk in disksInfo:
-            chart.add(disk, disksInfo[disk])
-        self.render_chart(chart)
+        for line in info:
+            dates.append(line["date"])
+            cpu.append(line["cpu_used"])
+            ram.append(line["ram_used"] * 100 / line["ram_total"])
+            swap.append(line["swap_used"] * 100 / line["swap_total"])
 
-    def render_single_disk_chart(self, mount, dates = [], used = []):
-        chart = pygal.Line(x_label_rotation=20)
-        chart.title = "Utilisation d'un seul disk (GB)"
-        chart.x_labels = map(self.date_formatter, dates)
-        chart.add(mount, used)
-        self.render_chart(chart)
+        self.fileName = "cpu_ram.svg"
+        self.render_time_chart("Utilisation de CPU, RAM et Swap (%)",
+                               dates,
+                               {"CPU": cpu, "RAM": ram, "Swap": swap})
+
+    def render_users_process_chart(self, server):
+        self.cursor.execute("""SELECT date, users_count, processes_count, zombies_count
+                               FROM stat
+                               WHERE server_name LIKE ?""", [server])
+        info = self.cursor.fetchall()
+        dates, users, procs, zombies = [], [], [], []
+
+        for line in info:
+            dates.append(line["date"])
+            users.append(line["users_count"])
+            procs.append(line["processes_count"])
+            zombies.append(line["zombies_count"])
+
+        self.fileName = "users_procs.svg"
+        self.render_time_chart("Nombre d'utilisateurs et processus", dates,
+                          {"Utilisateurs": users, "Processus": procs, "Zombies": zombies})
+
+    def render_disks_use_chart(self, server):
+        self.cursor.execute("""SELECT DISTINCT(date)
+                               FROM stat
+                               WHERE server_name LIKE ?""", [server])
+        dates = [ res["date"] for res in self.cursor.fetchall() ]
+
+        self.cursor.execute("""SELECT DISTINCT(mnt)
+                               FROM statDisk
+                               WHERE server_name LIKE ?""", [server])
+        disks = [ res["mnt"] for res in self.cursor.fetchall() ]
+        infoDisks = {}
+
+        for disk in disks:
+            self.cursor.execute("""SELECT stat.date, used, total
+                                   FROM stat
+                                       LEFT OUTER JOIN statDisk USING (server_name, date)
+                                   WHERE server_name = ? AND mnt = ?""",
+                                   [server, disk])
+            info = self.cursor.fetchall()
+            print disk
+            print info
+
+            infoDisks[disk] = []
+
+            for line in info:
+                if (line["used"] == ""):
+                    infoDisks[disk].append(0)
+                else:
+                    infoDisks[disk].append(line["used"] * 100 / line["total"])
+
+
+        self.fileName = "disks_use.svg"
+        self.render_time_chart("Utilisation des disques (%)", dates, infoDisks)
+
+    def render_single_disk_chart(self, dates = []):
+        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+                               FROM stat
+                               WHERE server_name LIKE ?""", [server])
+        info = self.cursor.fetchall()
+
+        dates, cpu, ram, swap = [], [], [], []
+
+        for line in info:
+            dates.append(line["date"])
+            cpu.append(line["cpu_used"])
+            ram.append(line["ram_used"] * 100 / line["ram_total"])
+            swap.append(line["swap_used"] * 100 / line["swap_total"])
+        self.fileName = "single_disk.svg"
+        self.render_time_chart("Utilisation d'un seul disk (GB)", dates,
+                          {mount: used})
 
 
 

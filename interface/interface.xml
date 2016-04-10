@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <main>
+        <text>
+Welcome to this application. I am the main. Este es un texto muy largo
+Muuuuuuuuuuy laaaargo!!! Muy muy muy muy muy largo.
+Tan largo que se va de los bordes de la pantalla y tengo que rectortarlo.
+En si, recortarlo es feo e incomodo. Pero no me queda otra, sino la presentacion de la ventana se va a ver como el orrrrrto.
+        </text>
+        <links>
+            <w1>Go to 1.</w1>
+            <exit>Exit</exit>
+        </links>
+    </main>
+    <windows>
+        <w1>
+            <text>Welcome to windows 1.</text>
+            <links>
+                <main>Main</main>
+                <w2>Go to 2</w2>
+            </links>
+        </w1>
+        <w2>
+            <text>Welcome to windows 2.</text>
+            <links>
+                <w1>Back to 1</w1>
+                <w3>Go to 3</w3>
+            </links>
+        </w2>
+        <w3>
+            <text>Welcome to windows 3.</text>
+            <links>
+                <w2>Back to 2</w2>
+                <main>Back to main</main>
+            </links>
+        </w3>
+    </windows>
+</interface>
