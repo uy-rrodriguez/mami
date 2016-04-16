@@ -22,7 +22,6 @@ from operator import attrgetter
 #from os import sys, path
 #sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from util import util
 from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
 
 

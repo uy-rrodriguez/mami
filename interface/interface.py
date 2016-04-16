@@ -14,8 +14,17 @@
 #############################################################################
 
 import curses
+#import sys
+import random
+
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from objets import server, cpu, disk, process, ram, swap
+from dbaccess import DBAccess
 from windowmenu import WindowMenu
 from windowstats import WindowStats
+from windowprocess import WindowProcess
 
 
 #############################################################################
@@ -24,23 +33,43 @@ from windowstats import WindowStats
 
 Y = 0
 X = 1
+MIN_HEIGHT = 20
+MIN_HEIGHT_PROCS = 15
+MIN_WIDTH = 120
 KEY_QUIT = ord("q")
 KEY_CHANGE_WIN = 9    # TAB
 
 
 class Interface:
+
+
+# ================================  CONSTRUCTEURS ET DESTRUCTEURS  ================================ #
+
     def __init__(self):
+        # Initialisation de curses
         self.init_curse()
-        self.dims = self.stdscr.getmaxyx()
-        h = self.dims[Y]/2
-        w = self.dims[X]/2
-        self.menu = WindowMenu(     self, self.stdscr, h-1, w-1, 0, 0, "interface.xml" )
-        self.stats = WindowStats(   self, self.stdscr, h-1, w-1, 0, w )
-        #self.procs = WindowProcess( self.stdscr, h-1, w-1, h, w )
-        #self.windows = [self.menu, self.stats, self.procs]
-        self.windows = [self.menu, self.stats]
+
+        # Initialisation des fenetres
+        dims = self.stdscr.getmaxyx()
+        dims = (max(dims[Y], MIN_HEIGHT), max(dims[X], MIN_WIDTH))
+        h = dims[Y]/2
+        w = dims[X]/2
+        hProcs = max(MIN_HEIGHT_PROCS, h)
+        self.pad = curses.newpad(h + hProcs, w*2)
+
+        self.menu = WindowMenu(self, self.pad, h, w, 0, 0, "interface.xml")
+        self.stats = WindowStats(self, self.pad, h, w, 0, w)
+        self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0)
+        self.windows = [self.menu, self.stats, self.procs]
+
+        # Focus de la fenetre principale
         self.focused = 0
         self.menu.focus()
+
+        # Connexion a la BD
+        self.db = DBAccess()
+        self.menu.set_servers(self.load_servers())
+
 
     def end(self):
         self.end_curse()
@@ -60,6 +89,57 @@ class Interface:
         curses.nocbreak();
         curses.curs_set(1)
         curses.endwin()                    # Restore the terminal to its original operating mode
+
+
+# ===========================================  ACCES BD  ========================================== #
+
+    # Lit la base de donnés pour récupérer les serveurs
+    # ...
+    def load_servers(self):
+        servers = []
+        for elem in self.db.get_all("server"):
+            s = server.Server()
+            s.name = elem["name"]
+            s.ip = elem["ip"]
+            s.uptime = elem["uptime"]
+            servers.append(s)
+        return servers
+
+    # Lit la base de donnés pour récupérer les stats du serveur
+    def load_server_stats(self, server):
+        last = self.db.get_last_date(server.name).next()[0]
+        res = self.db.get_by_fields("stat", ["server_name", "date"], [server.name, last]).next()
+        resDisks = self.db.get_by_fields("statDisk", ["server_name", "date"], [server.name, last])
+
+        #print >> sys.stderr, float(data["cpu_used"])
+        _cpu = cpu.CPU(); _cpu.used = float(res["cpu_used"])
+        _ram = ram.RAM(); _ram.total = int(res["ram_total"]); _ram.used = float(res["ram_used"])
+        _swap = swap.Swap(); _swap.total = int(res["swap_total"]); _swap.used = float(res["swap_used"])
+
+        disks = []
+        for line in resDisks:
+            d = disk.Disk()
+            d.mnt = line["mnt"]
+            d.total = int(line["total"])
+            d.used = float(line["used"])
+            disks.append(d)
+
+        statsData = {"server": server,
+                     "cpu": _cpu,
+                     "ram": _ram,
+                     "swap": _swap,
+                     "disks": disks}
+        return statsData
+
+    def load_server_greedies(self):
+        pass
+
+    def change_server(self, serverName):
+        self.stats.change_server(self.load_server_stats(serverName))
+        self.procs.change_server(serverName)
+
+
+# =======================================  BOUCLE PRINCIPALE  ===================================== #
 
     def handle_keys(self):
         k = self.stdscr.getch()
@@ -87,6 +167,10 @@ class Interface:
     def render(self):
         for w in self.windows:
             w.render()
+
+        dims = self.stdscr.getmaxyx()
+        self.pad.noutrefresh(0, 0, 0, 0, dims[Y]-1, dims[X]-1)
+        #curses.doupdate()
 
     def run(self):
         try:

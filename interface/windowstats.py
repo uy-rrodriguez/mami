@@ -8,6 +8,8 @@
 #############################################################################
 
 import curses
+
+import util
 from window import *
 
 
@@ -16,14 +18,22 @@ from window import *
 #############################################################################
 
 class WindowStats(Window):
-    def __init__(self, parent, stdscr, height, width, x, y):
-        super(WindowStats, self).__init__(parent, stdscr, height, width, x, y)
-        self.server = {"name":"server-01254-m", "ip":"192.168.5.1", "uptime":"5d 3h 12m"}
-        self.cpu = 0.5
-        self.ram = (15000.0, 1500.0)
-        self.swap = (1200.0, 200.0)
-        self.disks = [{"mount":"/sda1", "total":50000.0, "used":2000.0},
-                      {"mount":"/sda2", "total":20000.0, "used":5000.0}]
+    def __init__(self, parent, stdscr, height, width, y, x):
+        super(WindowStats, self).__init__(parent, stdscr, height, width, y, x)
+        self.server = None
+        self.cpu = None
+        self.ram = None
+        self.swap = None
+        self.disks = None
+
+
+    def change_server(self, statsData):
+        self.server = statsData["server"]
+        self.cpu = statsData["cpu"]
+        self.ram = statsData["ram"]
+        self.swap = statsData["swap"]
+        self.disks = statsData["disks"]
+
 
     def handle_key(self, key):
         pass
@@ -37,25 +47,29 @@ class WindowStats(Window):
         """
 
     def update(self):
-        self.cpu = (self.cpu + 0.00005) % 1
-        self.ram = (self.ram[0], (self.ram[1] + 0.5) % self.ram[0])
-        self.swap = (self.swap[0], (self.swap[1] + 0.02) % self.swap[0])
-        self.disks[0]["used"] = (self.disks[0]["used"] + 10) % self.disks[0]["total"]
-        self.disks[1]["used"] = (self.disks[1]["used"] + 5) % self.disks[1]["total"]
+        #super(WindowStats, self).update()
+        if self.server != None:
+            self.cpu.used = (self.cpu.used + 0.005) % 100
+            self.ram.used = (self.ram.used + 50) % self.ram.total
+            self.swap.used = (self.swap.used + 20) % self.swap.total
+            self.disks[0].used = (self.disks[0].used + 10) % self.disks[0].total
+            self.disks[1].used = (self.disks[1].used + 5) % self.disks[1].total
 
     def render(self):
         self.clear()
-        self.println(self.server["name"] + "    " + self.server["ip"] + "    uptime: " + self.server["uptime"])
-        self.println("CPU: " + "{:.1%}".format(self.cpu))
-        self.println("RAM: total " + str(self.ram[0]) + ", used " + "{:.1%}".format(self.ram[1] / self.ram[0]))
-        self.println("Swap: total " + str(self.swap[0]) + ", used " + "{:.1%}".format(self.swap[1] / self.swap[0]))
-        self.println()
-
-        self.println("Disks:")
-        for d in self.disks:
-            self._print(d["mount"] + " => ")
-            self._print("total " + str(d["total"]))
-            self._print(", used " + "{:.1%}".format(d["used"] / d["total"]))
+        if self.server != None:
+            self.println(self.server.name + "\t\t" + self.server.ip + "\t\t uptime: " + self.server.uptime)
+            self.println()
+            self.println("CPU: " + "{:.1f}".format(self.cpu.used) + "%")
+            self._print("RAM: total " + util.stringify_bytes(self.ram.total))
+            self.println("\t\t utilise " + "{:.1%}".format(self.ram.used / self.ram.total))
+            self._print("Swap: total " + util.stringify_bytes(self.swap.total))
+            self.println("\t\t utilise " + "{:.1%}".format(self.swap.used / self.swap.total))
             self.println()
 
-        self.screen.refresh()
+            self.println("Disks:")
+            for d in self.disks:
+                self._print(d.mnt + " => ")
+                self._print("total " + util.stringify_bytes(d.total))
+                self._print("\t utilise " + "{:.1%}".format(d.used / d.total))
+                self.println()

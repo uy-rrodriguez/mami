@@ -8,6 +8,7 @@
 #############################################################################
 
 import curses
+import sys
 
 
 #############################################################################
@@ -20,14 +21,19 @@ COLOR_SELECTED = 1
 COLOR_NOSELECTED = 0
 
 class Window(object):
-    def __init__(self, parent, stdscr, height, width, x, y):
+    boxV = 0
+    boxH = 0
+
+    def __init__(self, interface, parent, height, width, y, x):
+        self.interface = interface
         self.parent = parent
-        self.screen = stdscr.subwin(height, width, x, y)
-        self.dims = self.screen.getmaxyx()
-        self.posx = 0
-        self.posy = 0
-        self.minx = 2
-        self.miny = 1
+        self.screen = parent.subwin(height, width, y, x)
+        #self.screen.scrollok(True)
+        #self.screen.idlok(True)
+        self.topleft = (y, x)
+        self.dims = (height, width)
+        self.posy, self.posx = 0, 0
+        self.miny, self.minx = 1, 2
         self.hasFocus = False
 
     def handle_key(self, key):
@@ -45,9 +51,7 @@ class Window(object):
         pass
 
     def render(self):
-        self.clear()
-        self.println("WINDOW")
-        self.screen.refresh()
+        pass
 
     def unfocus(self):
         self.hasFocus = False
@@ -55,30 +59,43 @@ class Window(object):
     def focus(self):
         self.hasFocus = True
 
-    def move(self, y, x):
-        if y > self.dims[Y]:
-            y = self.dims[Y]-1
-        if x > self.dims[X]:
-            x = self.dims[X]-1
-        self.screen.move(y, x)
-        self.posy = y
-        self.posx = x
-
     def clear(self):
         self.screen.erase()
-        self.screen.box()
+        self.screen.box(self.boxV, self.boxH)
         self.move(self.miny, self.minx)
 
-    def _print(self, text="", color=None):
-        if color == None:
-            self.screen.addstr(text)
-        else:
-            self.screen.addstr(text, color)
+    def move(self, y, x):
+        try:
+            self.screen.move(y, x)
+            self.posy = y
+            self.posx = x
+        except:
+            pass
+
+    def _print(self, text="", color=None, pos=None):
+        if type(text) is unicode:
+            text = bytes(text.encode('utf-8'))
+        elif not type(text) is str:
+            text = str(text)
+        try:
+            if color == None:
+                if pos == None:
+                    self.screen.addstr(text)
+                else:
+                    self.screen.addstr(pos[Y], pos[X], text)
+            else:
+                if pos == None:
+                    self.screen.addstr(text, color)
+                else:
+                    self.screen.addstr(pos[Y], pos[X], text, color)
+        except curses.error:
+            #sys.error.println("ERRROR")
+            #sys.error.println(curses.error)
+            pass
 
     def println(self, text="", color=None):
         self._print(text, color)
-        # We calculate the next line according to the break lines in the text
-        self.move(self.posy + 1, self.minx)
+        self.move(self.posy+1, self.minx)
 
     def print_long(self, longText):
         maxlen = self.dims[1] - 2*self.minx

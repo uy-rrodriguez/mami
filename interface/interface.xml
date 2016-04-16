@@ -2,23 +2,28 @@
 <interface>
     <main>
         <text>
-Welcome to this application. I am the main. Este es un texto muy largo
-Muuuuuuuuuuy laaaargo!!! Muy muy muy muy muy largo.
-Tan largo que se va de los bordes de la pantalla y tengo que rectortarlo.
-En si, recortarlo es feo e incomodo. Pero no me queda otra, sino la presentacion de la ventana se va a ver como el orrrrrto.
+Menu principal
+--------------
+Bienvenu a l'interface d'administration de serveurs.
+Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que generer des graphes a partir de l'historique.
         </text>
         <links>
-            <w1>Go to 1.</w1>
+            <win_servers>Liste de serveurs</win_servers>
         </links>
     </main>
     <windows>
-        <w1>
-            <text>Welcome to windows 1.</text>
+        <win_servers>
+            <text>
+Serveurs
+--------
+Voici la liste de tous les serveurs existants dans la base de donnees.
+Veuillez bien selectionner un pour afficher les stats.
+            </text>
+            <servers></servers>
             <links>
-                <main>Main</main>
-                <w2>Go to 2</w2>
+                <main>Retourner au menu principal</main>
             </links>
-        </w1>
+        </win_servers>
         <w2>
             <text>Welcome to windows 2.</text>
             <links>
