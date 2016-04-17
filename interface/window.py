@@ -85,9 +85,9 @@ class Window(object):
                     self.screen.addstr(pos[Y], pos[X], text)
             else:
                 if pos == None:
-                    self.screen.addstr(text, color)
+                    self.screen.addstr(text, curses.color_pair(curses.color_pair(color)))
                 else:
-                    self.screen.addstr(pos[Y], pos[X], text, color)
+                    self.screen.addstr(pos[Y], pos[X], text, curses.color_pair(curses.color_pair(color)))
         except curses.error:
             #sys.error.println("ERRROR")
             #sys.error.println(curses.error)

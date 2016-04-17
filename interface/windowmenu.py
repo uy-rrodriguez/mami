@@ -90,6 +90,8 @@ class WindowMenu(Window):
 
 
     def handle_key(self, key):
+        if not self.hasFocus:
+            return
         if key == curses.KEY_DOWN and self.selected < len(self.links) - 1:
             self.selected += 1
         elif key == curses.KEY_UP and self.selected > 0:
@@ -144,9 +146,9 @@ class WindowMenu(Window):
         for i in range(0, len(self.links)):
             if i == self.selected and self.hasFocus:
                 self.println(self.links[i].label,
-                             curses.color_pair(curses.color_pair(COLOR_SELECTED)))
+                             COLOR_SELECTED)
             else:
                 self.println(self.links[i].label,
-                             curses.color_pair(curses.color_pair(COLOR_NOSELECTED)))
+                             COLOR_NOSELECTED)
 
         self.println()

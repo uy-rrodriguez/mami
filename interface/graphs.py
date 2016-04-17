@@ -2,14 +2,9 @@
 # -*- coding: utf-8 -*-
 
 #############################################################################
-#    Interface :                                                            #
-#        Cette classe implémente une interface de visualisation en ligne    #
-#        de commande, qui affichera pour chaque serveur le dernier état     #
-#        connu, un graphe d’évolution pour les données aillant un           #
-#        historique, ainsi que la date depuis la dernière communication.    #
-#        Ce package intègre aussi des éléments de contrôle lui permettant   #
-#        de détecter une situation de crise et de prévenir l’administrateur #
-#        par e-mail.                                                        #
+#    Graphs :                                                               #
+#        Cette classe implémente plusieurs methodes qui permettent la       #
+#        generation des graphiques d'evolution des donnees.                 #
 #                                                                           #
 #############################################################################
 
@@ -19,7 +14,7 @@ from datetime import datetime
 
 
 #############################################################################
-#    Interface. Classe principale du module.                                #
+#    Graphs.                                                                #
 #############################################################################
 
 
@@ -30,7 +25,7 @@ def dict_factory(cursor, row):
     return d
 
 
-class Interface:
+class Graphs:
     def __init__(self):
         self.fileName = "chart.svg"
         self.browser = True
@@ -39,24 +34,6 @@ class Interface:
         self.conn = sqlite3.connect("../data/sonde_info.db")
         self.conn.row_factory = dict_factory
         self.cursor = self.conn.cursor()
-
-        self.cursor.execute("SELECT name, ip, uptime FROM server")
-        servers = self.cursor.fetchall()
-
-        for s in servers:
-            print s["name"]
-            #self.render_cpu_ram_chart(s["name"])
-            #self.render_users_process_chart(s["name"])
-            self.render_disks_use_chart(s["name"])
-            #self.render_single_disk_chart(dates)
-
-        dates = [
-                datetime(2013, 1, 2, 12, 0),
-                datetime(2013, 1, 12, 14, 30, 45),
-                datetime(2013, 2, 2, 6),
-                datetime(2013, 2, 22, 9, 45)
-                ]
-
 
     def date_formatter(self, dt):
         return dt.strftime("%d-%m-%Y %H:%M:%S")
@@ -130,8 +107,8 @@ class Interface:
                                    WHERE server_name = ? AND mnt = ?""",
                                    [server, disk])
             info = self.cursor.fetchall()
-            print disk
-            print info
+            #print disk
+            #print info
 
             infoDisks[disk] = []
 
@@ -169,7 +146,24 @@ class Interface:
 #############################################################################
 
 def main():
-    Interface()
+    g = Graphs()
+    g.cursor.execute("SELECT name, ip, uptime FROM server")
+    servers = g.cursor.fetchall()
+
+    dates = [
+        datetime(2013, 1, 2, 12, 0),
+        datetime(2013, 1, 12, 14, 30, 45),
+        datetime(2013, 2, 2, 6),
+        datetime(2013, 2, 22, 9, 45)
+    ]
+
+    for s in servers:
+        #print s["name"]
+        g.render_cpu_ram_chart(s["name"])
+        g.render_users_process_chart(s["name"])
+        g.render_disks_use_chart(s["name"])
+        #g.render_single_disk_chart(dates)
+
 
 if __name__=='__main__':
     main()

@@ -20,7 +20,7 @@ import random
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from objets import server, cpu, disk, process, ram, swap
+from objets.arraydataobject import ArrayDataObject
 from dbaccess import DBAccess
 from windowmenu import WindowMenu
 from windowstats import WindowStats
@@ -49,6 +49,9 @@ class Interface:
         # Initialisation de curses
         self.init_curse()
 
+        # Connexion a la BD
+        self.db = DBAccess()
+
         # Initialisation des fenetres
         dims = self.stdscr.getmaxyx()
         dims = (max(dims[Y], MIN_HEIGHT), max(dims[X], MIN_WIDTH))
@@ -58,17 +61,17 @@ class Interface:
         self.pad = curses.newpad(h + hProcs, w*2)
 
         self.menu = WindowMenu(self, self.pad, h, w, 0, 0, "interface.xml")
-        self.stats = WindowStats(self, self.pad, h, w, 0, w)
+
+        self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
         self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0)
         self.windows = [self.menu, self.stats, self.procs]
 
         # Focus de la fenetre principale
         self.focused = 0
-        self.menu.focus()
 
-        # Connexion a la BD
-        self.db = DBAccess()
+        # Initialisation du menu
         self.menu.set_servers(self.load_servers())
+        self.menu.focus()
 
 
     def end(self):
@@ -98,45 +101,19 @@ class Interface:
     def load_servers(self):
         servers = []
         for elem in self.db.get_all("server"):
-            s = server.Server()
+            s = ArrayDataObject()
             s.name = elem["name"]
             s.ip = elem["ip"]
             s.uptime = elem["uptime"]
             servers.append(s)
         return servers
 
-    # Lit la base de donnés pour récupérer les stats du serveur
-    def load_server_stats(self, server):
-        last = self.db.get_last_date(server.name).next()[0]
-        res = self.db.get_by_fields("stat", ["server_name", "date"], [server.name, last]).next()
-        resDisks = self.db.get_by_fields("statDisk", ["server_name", "date"], [server.name, last])
-
-        #print >> sys.stderr, float(data["cpu_used"])
-        _cpu = cpu.CPU(); _cpu.used = float(res["cpu_used"])
-        _ram = ram.RAM(); _ram.total = int(res["ram_total"]); _ram.used = float(res["ram_used"])
-        _swap = swap.Swap(); _swap.total = int(res["swap_total"]); _swap.used = float(res["swap_used"])
-
-        disks = []
-        for line in resDisks:
-            d = disk.Disk()
-            d.mnt = line["mnt"]
-            d.total = int(line["total"])
-            d.used = float(line["used"])
-            disks.append(d)
-
-        statsData = {"server": server,
-                     "cpu": _cpu,
-                     "ram": _ram,
-                     "swap": _swap,
-                     "disks": disks}
-        return statsData
-
     def load_server_greedies(self):
         pass
 
-    def change_server(self, serverName):
-        self.stats.change_server(self.load_server_stats(serverName))
-        self.procs.change_server(serverName)
+    def change_server(self, server):
+        self.stats.change_server(server)
+        self.procs.change_server(server.name)
 
 
 # =======================================  BOUCLE PRINCIPALE  ===================================== #
