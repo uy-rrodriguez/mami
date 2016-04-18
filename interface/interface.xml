@@ -9,6 +9,8 @@ Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que gen
         </text>
         <links>
             <win_servers>Liste de serveurs</win_servers>
+            <win_crises>Gestion de crises</win_crises>
+            <win_emails>Gestion de mailing</win_emails>
         </links>
     </main>
     <windows>
@@ -21,22 +23,34 @@ Veuillez bien selectionner un pour afficher les stats.
             </text>
             <servers></servers>
             <links>
-                <main>Retourner au menu principal</main>
+                <main>Retour accueil</main>
             </links>
         </win_servers>
-        <w2>
-            <text>Welcome to windows 2.</text>
+        <win_crises>
+            <text>
+Gestion de crises
+-----------------
+Vous pouvez configurer certains parametres pour detecter des crises.
+Accedez aux differentes options pour definir vos situations de crise.
+            </text>
             <links>
-                <w1>Back to 1</w1>
-                <w3>Go to 3</w3>
+                <win_crises_params>Modifier CPU, memoire et disques</win_crises_params>
+                <main>Retour accueil</main>
             </links>
-        </w2>
-        <w3>
-            <text>Welcome to windows 3.</text>
+        </win_crises>
+        <win_emails>
+            <text>
+Gestion de mailing
+------------------
+Le systeme envoie automatiquement des emails pour vous prevenir de situations de crise.
+Ici vous pouvez configurer les parametres des messages ainsi que leur contenu.
+            </text>
             <links>
-                <w2>Back to 2</w2>
-                <main>Back to main</main>
+                <win_emails_addr>Configurer adresses</win_emails_addr>
+                <win_emails_temp>Templates</win_emails_temp>
+                <win_emails_test>Envoyer email de test</win_emails_test>
+                <main>Retour accueil</main>
             </links>
-        </w3>
+        </win_emails>
     </windows>
 </interface>

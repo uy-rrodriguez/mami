@@ -16,7 +16,7 @@ import sys
 #    DBAccess.                                                              #
 #############################################################################
 
-PATH = "/home/ricardo/Documentos/FAC/SE/Projet/data/sonde_info.db"
+PATH = "/home/etudiants/inf/uapv1601663/sonde_info.db"
 
 class DBAccess:
     def __init__(self):
@@ -41,6 +41,12 @@ class DBAccess:
 
     def get_last_date(self, server):
         return self.cursor.execute("SELECT MAX(date) FROM stat WHERE server_name = ?", [server])
+
+    def execute(self, sql, params = []):
+        return self.cursor.execute(sql, params)
+
+    def fetchall(self):
+        return self.cursor.fetchall()
 
 
 #############################################################################

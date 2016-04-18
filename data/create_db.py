@@ -14,20 +14,27 @@
 import sqlite3
 import os
 
-bd = "sonde_info.db"
-os.remove(bd)
-conn = sqlite3.connect(bd)
+bd = "/home/etudiants/inf/uapv1601663/sonde_info.db"
+try: os.remove(bd)
+except: pass
 
+conn = sqlite3.connect(bd)
+conn.close()
+
+conn = sqlite3.connect(bd)
 c = conn.cursor()
 
-c.execute('''
+sql = '''
     CREATE TABLE IF NOT EXISTS server(
         name VARCHAR(50),
         ip VARCHAR(10),
         uptime VARCHAR(10)
-    )''')
+    )'''
+print sql
+c.execute(sql)
+conn.commit()
 
-c.execute('''
+sql = '''
     CREATE TABLE IF NOT EXISTS stat(
         server_name VARCHAR(50),
         date VARCHAR(10),
@@ -41,9 +48,12 @@ c.execute('''
         users_count integer,
         FOREIGN KEY (server_name) REFERENCES server(name),
         PRIMARY KEY (server_name, date)
-    )''')
+    )'''
+print sql
+c.execute(sql)
+conn.commit()
 
-c.execute('''
+sql = '''
     CREATE TABLE IF NOT EXISTS statDisk(
         server_name VARCHAR(50),
         date VARCHAR(10),
@@ -52,20 +62,27 @@ c.execute('''
         total integer,
         PRIMARY KEY (server_name, date, mnt)
         FOREIGN KEY (server_name, date) REFERENCES stat(server_name, date)
-    )''')
+    )'''
+print sql
+c.execute(sql)
+conn.commit()
 
-c.execute('''
+sql = '''
     CREATE TABLE IF NOT EXISTS user(
         server_name VARCHAR(50) PRIMARY KEY,
         users_list text,
         FOREIGN KEY (server_name) REFERENCES server(name)
-    )''')
+    )'''
+print sql
+c.execute(sql)
+conn.commit()
 
-c.execute('''
+sql = '''
     CREATE TABLE IF NOT EXISTS process(
         server_name VARCHAR(50) PRIMARY KEY,
         greedy_list text,
         FOREIGN KEY (server_name) REFERENCES server(name)
-    )''')
-
-conn.commit
+    )'''
+print sql
+c.execute(sql)
+conn.commit()

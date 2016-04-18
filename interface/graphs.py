@@ -8,7 +8,7 @@
 #                                                                           #
 #############################################################################
 
-import sqlite3
+import sys, os
 import pygal
 from datetime import datetime
 
@@ -26,23 +26,31 @@ def dict_factory(cursor, row):
 
 
 class Graphs:
-    def __init__(self):
+    def __init__(self, dataBaseInstance):
         self.fileName = "chart.svg"
         self.browser = True
 
         # Connexion BD
-        self.conn = sqlite3.connect("../data/sonde_info.db")
-        self.conn.row_factory = dict_factory
-        self.cursor = self.conn.cursor()
+        self.db = dataBaseInstance
 
     def date_formatter(self, dt):
         return dt.strftime("%d-%m-%Y %H:%M:%S")
 
     def save_or_display_chart(self, chart):
+        # Desactivation de console
+        devnull = open(os.devnull, "w")
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+
+        # Affichage
         if (self.browser == True):
             chart.render_in_browser()
         else:
             chart.render_to_file(self.fileName)
+
+        # Réactivation de console
+        sys.stdout = old_stdout
+
 
     def render_time_chart(self, title, dates=[], linesInfo={}):
         chart = pygal.Line(x_label_rotation=20)
@@ -54,10 +62,10 @@ class Graphs:
         self.save_or_display_chart(chart)
 
     def render_cpu_ram_chart(self, server):
-        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+        self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
+        info = self.db.fetchall()
         dates, cpu, ram, swap = [], [], [], []
 
         for line in info:
@@ -72,10 +80,10 @@ class Graphs:
                                {"CPU": cpu, "RAM": ram, "Swap": swap})
 
     def render_users_process_chart(self, server):
-        self.cursor.execute("""SELECT date, users_count, processes_count, zombies_count
+        self.db.execute("""SELECT date, users_count, processes_count, zombies_count
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
+        info = self.db.fetchall()
         dates, users, procs, zombies = [], [], [], []
 
         for line in info:
@@ -89,24 +97,24 @@ class Graphs:
                           {"Utilisateurs": users, "Processus": procs, "Zombies": zombies})
 
     def render_disks_use_chart(self, server):
-        self.cursor.execute("""SELECT DISTINCT(date)
+        self.db.execute("""SELECT DISTINCT(date)
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
-        dates = [ res["date"] for res in self.cursor.fetchall() ]
+        dates = [ res["date"] for res in self.db.fetchall() ]
 
-        self.cursor.execute("""SELECT DISTINCT(mnt)
+        self.db.execute("""SELECT DISTINCT(mnt)
                                FROM statDisk
                                WHERE server_name LIKE ?""", [server])
-        disks = [ res["mnt"] for res in self.cursor.fetchall() ]
+        disks = [ res["mnt"] for res in self.db.fetchall() ]
         infoDisks = {}
 
         for disk in disks:
-            self.cursor.execute("""SELECT stat.date, used, total
+            self.db.execute("""SELECT stat.date, used, total
                                    FROM stat
                                        LEFT OUTER JOIN statDisk USING (server_name, date)
                                    WHERE server_name = ? AND mnt = ?""",
                                    [server, disk])
-            info = self.cursor.fetchall()
+            info = self.db.fetchall()
             #print disk
             #print info
 
@@ -123,10 +131,10 @@ class Graphs:
         self.render_time_chart("Utilisation des disques (%)", dates, infoDisks)
 
     def render_single_disk_chart(self, dates = []):
-        self.cursor.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+        self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
-        info = self.cursor.fetchall()
+        info = self.db.fetchall()
 
         dates, cpu, ram, swap = [], [], [], []
 
