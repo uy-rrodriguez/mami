@@ -63,7 +63,7 @@ class Interface:
         self.menu = WindowMenu(self, self.pad, h, w, 0, 0, "interface.xml")
 
         self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
-        self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0)
+        self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0, self.db)
         self.windows = [self.menu, self.stats, self.procs]
 
         # Focus de la fenetre principale
@@ -82,6 +82,7 @@ class Interface:
         self.stdscr.keypad(1)              # Enable keypad mode (handle keys with curses.KEY_LEFT, etc).
         self.stdscr.nodelay(True)
         curses.start_color()               # Enable colors
+        curses.use_default_colors()
         curses.noecho()                    # Disable echoing keys
         curses.cbreak()                    # React to keys instantly, without waiting for Enter
         curses.curs_set(0)                 # Disable cursor
@@ -113,7 +114,7 @@ class Interface:
 
     def change_server(self, server):
         self.stats.change_server(server)
-        self.procs.change_server(server.name)
+        self.procs.change_server(server)
 
 
 # =======================================  BOUCLE PRINCIPALE  ===================================== #
