@@ -20,6 +20,7 @@ c.executescript("""
     DELETE FROM statDisk;
     DELETE FROM stat;
     DELETE FROM server;
+    DELETE FROM process;
 """)
 
 
@@ -94,4 +95,86 @@ c.executescript("""
         ('Server 2', '"""+date6+"""', 'sda0', 25000, 40000),
         ('Server 2', '"""+date6+"""', 'sda1', 10000, 20000);
 
+""")
+
+
+procs = """
+    <greedy>
+        <process>
+            <pid>4040</pid>
+            <command>firefox</command>
+            <username>uapv1601663</username>
+            <cpu>6.4</cpu>
+            <ram>568233984</ram>
+        </process>
+        <process>
+            <pid>3847</pid>
+            <command>compiz</command>
+            <username>uapv1601663</username>
+            <cpu>5.7</cpu>
+            <ram>228220928</ram>
+        </process>
+        <process>
+            <pid>1818</pid>
+            <command>Xorg</command>
+            <username>root</username>
+            <cpu>5.5</cpu>
+            <ram>93159424</ram>
+        </process>
+        <process>
+            <pid>4294</pid>
+            <command>LightTable</command>
+            <username>uapv1601663</username>
+            <cpu>2.8</cpu>
+            <ram>135430144</ram>
+        </process>
+        <process>
+            <pid>16435</pid>
+            <command>gnome-system-monitor</command>
+            <username>uapv1601663</username>
+            <cpu>3.7</cpu>
+            <ram>81625088</ram>
+        </process>
+        <process>
+            <pid>4223</pid>
+            <command>LightTable</command>
+            <username>uapv1601663</username>
+            <cpu>0.2</cpu>
+            <ram>98181120</ram>
+        </process>
+        <process>
+            <pid>1</pid>
+            <command>init</command>
+            <username>root</username>
+            <cpu>0.0</cpu>
+            <ram>7061504</ram>
+        </process>
+        <process>
+            <pid>2</pid>
+            <command>kthreadd</command>
+            <username>root</username>
+            <cpu>0.0</cpu>
+            <ram>0</ram>
+        </process>
+        <process>
+            <pid>3</pid>
+            <command>ksoftirqd/0</command>
+            <username>root</username>
+            <cpu>0.0</cpu>
+            <ram>0</ram>
+        </process>
+        <process>
+            <pid>5</pid>
+            <command>kworker/0:0H</command>
+            <username>root</username>
+            <cpu>0.0</cpu>
+            <ram>0</ram>
+        </process>
+    </greedy>
+"""
+c.executescript("""
+    INSERT INTO process (server_name, greedy_list)
+    VALUES
+        ('Server 1', '""" + procs + """'),
+        ('Server 2', '');
 """)

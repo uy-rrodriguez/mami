@@ -19,6 +19,8 @@ Y = 0
 X = 1
 COLOR_SELECTED = 1
 COLOR_NOSELECTED = 0
+COLOR_TITLE = 2
+COLOR_TABLE = 3
 
 class Window(object):
     boxV = 0
@@ -35,6 +37,12 @@ class Window(object):
         self.posy, self.posx = 0, 0
         self.miny, self.minx = 1, 2
         self.hasFocus = False
+
+        # Initializing colors
+        curses.init_pair(COLOR_SELECTED, curses.COLOR_WHITE, curses.COLOR_BLUE);
+        curses.init_pair(COLOR_NOSELECTED, curses.COLOR_WHITE, -1);
+        curses.init_pair(COLOR_TITLE, curses.COLOR_CYAN, -1);
+        curses.init_pair(COLOR_TABLE, curses.COLOR_BLACK, curses.COLOR_WHITE);
 
     def handle_key(self, key):
         pass
@@ -85,9 +93,9 @@ class Window(object):
                     self.screen.addstr(pos[Y], pos[X], text)
             else:
                 if pos == None:
-                    self.screen.addstr(text, curses.color_pair(curses.color_pair(color)))
+                    self.screen.addstr(text, curses.color_pair(color))
                 else:
-                    self.screen.addstr(pos[Y], pos[X], text, curses.color_pair(curses.color_pair(color)))
+                    self.screen.addstr(pos[Y], pos[X], text, curses.color_pair(color))
         except curses.error:
             #sys.error.println("ERRROR")
             #sys.error.println(curses.error)
