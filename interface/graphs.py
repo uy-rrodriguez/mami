@@ -8,7 +8,8 @@
 #                                                                           #
 #############################################################################
 
-import sys, os
+import os
+import subprocess
 import pygal
 from datetime import datetime
 
@@ -27,29 +28,32 @@ def dict_factory(cursor, row):
 
 class Graphs:
     def __init__(self, dataBaseInstance):
-        self.fileName = "chart.svg"
-        self.browser = True
-
         # Connexion BD
         self.db = dataBaseInstance
 
     def date_formatter(self, dt):
         return dt.strftime("%d-%m-%Y %H:%M:%S")
 
-    def save_or_display_chart(self, chart):
-        # Desactivation de console
+    def create_html(self, chart, fileName):
+        content = chart.render_data_uri()
+        pathHTML = "tmp/chart.html"
+        f = open(pathHTML, "w")
+        f.write("""<html><head><title>""" + fileName + """</title></head><body>
+                       <embed width='100%' height='100%' src='""" + content + """'/>
+                </body></html>""")
+        f.close()
+        return pathHTML
+
+    def save_or_display_chart(self, chart, fileName, browser = True):
+        # Pour desactiver la console
         devnull = open(os.devnull, "w")
-        old_stdout = sys.stdout
-        sys.stdout = devnull
 
         # Affichage
-        if (self.browser == True):
-            chart.render_in_browser()
+        if browser:
+            html = self.create_html(chart, fileName)
+            subprocess.Popen(["firefox", html], stdout=devnull, stderr=devnull)
         else:
             chart.render_to_file(self.fileName)
-
-        # Réactivation de console
-        sys.stdout = old_stdout
 
 
     def render_time_chart(self, title, dates=[], linesInfo={}):

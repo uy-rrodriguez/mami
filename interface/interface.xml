@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
     <main>
+        <title>Menu principal</title>
         <text>
-Menu principal
---------------
 Bienvenu a l'interface d'administration de serveurs.
 Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que generer des graphes a partir de l'historique.
         </text>
@@ -27,9 +26,8 @@ Veuillez bien selectionner un pour afficher les stats.
             </links>
         </win_servers>
         <win_crises>
+            <title>Gestion de crises</title>
             <text>
-Gestion de crises
------------------
 Vous pouvez configurer certains parametres pour detecter des crises.
 Accedez aux differentes options pour definir vos situations de crise.
             </text>
@@ -39,9 +37,8 @@ Accedez aux differentes options pour definir vos situations de crise.
             </links>
         </win_crises>
         <win_emails>
+            <title>Gestion de mailing</title>
             <text>
-Gestion de mailing
-------------------
 Le systeme envoie automatiquement des emails pour vous prevenir de situations de crise.
 Ici vous pouvez configurer les parametres des messages ainsi que leur contenu.
             </text>

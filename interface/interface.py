@@ -60,7 +60,7 @@ class Interface:
         hProcs = max(MIN_HEIGHT_PROCS, h)
         self.pad = curses.newpad(h + hProcs, w*2)
 
-        self.menu = WindowMenu(self, self.pad, h, w, 0, 0, "interface.xml")
+        self.menu = WindowMenu(self, self.pad, h, w, 0, 0)
 
         self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
         self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0)
