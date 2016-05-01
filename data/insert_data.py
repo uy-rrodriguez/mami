@@ -176,5 +176,5 @@ c.executescript("""
     INSERT INTO process (server_name, greedy_list)
     VALUES
         ('Server 1', '""" + procs + """'),
-        ('Server 2', '');
+        ('Server 2', '""" + procs + """');
 """)

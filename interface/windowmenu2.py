@@ -13,30 +13,42 @@
 #############################################################################
 
 import curses
-from window import *
 from lxml import etree as ET
+
+from os import sys, path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from objets.arraydataobject import ArrayDataObject
+from window import *
 
 
 #############################################################################
-#    BaseState et autres classes State concrètes.                           #
+#    BaseState. Classe de base pour tous les états.                         #
 #############################################################################
 
 # Abstraite
 import abc
 class BaseState():
     __metaclass__ = abc.ABCMeta
-    instance = None
+    inst = None
 
     def __init__(self, context):
         self.context = context
 
+        # Lecture du fichier avec les titres et descriptifs des menus
+        f = open("interface.xml", "r")
+        self.contents = f.read()
+        self.root = ET.fromstring(self.contents)
+        f.close()
+
+    def change_to(self):
+        self.context.state = self
+
     @classmethod
     def instance(cls, context):
-        instance = cls(context)
-
-    @abc.abstractmethod
-    def change_to(self):
-        pass
+        if cls.inst == None:
+            cls.inst = cls(context)
+        return cls.inst
 
     @abc.abstractmethod
     def handle_key(self, key):
@@ -50,6 +62,10 @@ class BaseState():
     def render(self):
         pass
 
+
+#############################################################################
+#    BaseMenuState. Classe de base pour les états qui ont des menus.        #
+#############################################################################
 
 class Link():
     def __init__(self, name, label):
@@ -62,23 +78,10 @@ class BaseMenuState(BaseState):
         self.title = ""
         self.text = ""
         self.links = []
+        self.selected = 0
 
-         # Lecture du fichier
-        f = open("interface.xml", "r")
-        self.contents = f.read()
-        self.root = ET.fromstring(self.contents)
-        f.close()
-
-        # First menu
+        # Premier menu
         self.load_menu("main")
-
-    def instance(self):
-        if self.instance == None:
-            self.instance = BaseMenuState()
-        return self.instance
-
-    def change_to(cls):
-        pass
 
     def handle_key(self, key):
         if key == curses.KEY_DOWN and self.selected < len(self.links) - 1:
@@ -89,16 +92,16 @@ class BaseMenuState(BaseState):
             win_name = self.links[self.selected].name
 
             # Changement d'état
-            if win_name == "servers":
-                ServersState.instance().change_to()
+            if win_name == "win_servers":
+                ServersState.instance(self.context).change_to()
             elif win_name == "win_crises_params":
-                ConfigCrisisState.instance().change_to()
+                ConfigCrisisState.instance(self.context).change_to()
             elif win_name == "win_emails_addr":
-                ConfigEmailAddrState.instance().change_to()
+                ConfigEmailAddrState.instance(self.context).change_to()
             elif win_name == "win_emails_temp":
-                ConfigEmailTempState.instance().change_to()
+                ConfigEmailTempState.instance(self.context).change_to()
             elif win_name == "win_emails_test":
-                ConfigEmailTestState.instance().change_to()
+                ConfigEmailTestState.instance(self.context).change_to()
             else:
                 self.load_menu(win_name)
 
@@ -106,21 +109,21 @@ class BaseMenuState(BaseState):
         pass
 
     def render(self):
-        self.println(self.title)
-        self.println("-------------------------------------")
-        self.print_long(self.text)
-        self.println()
+        self.context.println(self.title)
+        self.context.println("-------------------------------------")
+        self.context.print_long(self.text)
+        self.context.println()
 
         # Render options
         for i in range(0, len(self.links)):
             if i == self.selected and self.context.hasFocus:
-                self.println(self.links[i].label,
-                             self.context.COLOR_SELECTED)
+                self.context.println(self.links[i].label,
+                                     self.context.COLOR_SELECTED)
             else:
-                self.println(self.links[i].label,
-                             self.context.COLOR_NOSELECTED)
+                self.context.println(self.links[i].label,
+                                     self.context.COLOR_NOSELECTED)
 
-        self.println()
+        self.context.println()
 
     def load_menu(self, win):
         if win != "main":
@@ -137,27 +140,77 @@ class BaseMenuState(BaseState):
 
 
 #############################################################################
+#    ServersState. État pour gérer la liste de serveurs.                    #
+#############################################################################
+
+class ServersState(BaseState):
+    def __init__(self, context):
+        super(ServersState, self).__init__(context)
+        self.title = self.root.find("./windows/win_servers/title").text
+        self.text = self.root.find("./windows/win_servers/text").text
+        self.servers = []
+        self.links = []
+        self.selected = 0
+
+    def change_to(self):
+        super(ServersState, self).change_to()
+
+        # Chargement des serveurs (lecture de la BD)
+        self.servers = []
+        self.links = []
+        for elem in self.context.db.get_all("server"):
+            s = ArrayDataObject()
+            s.name = elem["name"]
+            s.ip = elem["ip"]
+            s.uptime = elem["uptime"]
+            self.servers.append(s)
+            self.links.append(Link(s.name, s.name))
+
+        # Option pour aller en arrière
+        self.links.append(Link("back", "Retour"))
+
+    def handle_key(self, key):
+        if key == curses.KEY_DOWN and self.selected < len(self.links) - 1:
+            self.selected += 1
+        elif key == curses.KEY_UP and self.selected > 0:
+            self.selected -= 1
+        elif key == 10:
+            # Changement d'état
+            if self.links[self.selected].name == "back":
+                BaseMenuState.instance(self.context).change_to()
+            else:
+                self.context.select_server(self.servers[self.selected])
+
+    def update(self):
+        pass
+
+    def render(self):
+        self.context.println(self.title)
+        self.context.println("-------------------------------------")
+        self.context.print_long(self.text)
+        self.context.println()
+
+        # Render options
+        for i in range(0, len(self.links)):
+            if i == self.selected and self.context.hasFocus:
+                self.context.println(self.links[i].label,
+                                     self.context.COLOR_SELECTED)
+            else:
+                self.context.println(self.links[i].label,
+                                     self.context.COLOR_NOSELECTED)
+
+        self.context.println()
+
+
+#############################################################################
 #    WindowMenu.                                                            #
 #############################################################################
 
-BASE_WINDOWS = "windows/"
-WINDOW_MAIN = "main"
-
-ACTION_MAIN = "main"
-ACTION_EXIT = "exit"
-ACTION_SERVER = "server"
-
-ELEM_TEXT = "text"
-ELEM_LINKS = "links"
-ELEM_SERVERS = "servers"
-
-LINK_ACTION = "action"
-LINK_LABEL = "label"
-
 class WindowMenu(Window):
-    def __init__(self, parent, stdscr, height, width, y, x):
+    def __init__(self, parent, stdscr, height, width, y, x, dataBaseInstance):
         super(WindowMenu, self).__init__(parent, stdscr, height, width, y, x)
-        self.state = BaseMenuState.instance()
+        self.db = dataBaseInstance
+        self.state = BaseMenuState.instance(self)
 
     def set_servers(self, servers):
         self.servers = servers
@@ -168,8 +221,8 @@ class WindowMenu(Window):
         else:
             self.load_menu(BASE_WINDOWS + attribs[0])
 
-    def action_select_server(self, attribs):
-        self.interface.change_server(attribs[0])
+    def select_server(self, server):
+        self.interface.change_server(server)
 
 
     def handle_key(self, key):

@@ -63,7 +63,7 @@ class Graphs:
         chart.x_labels = dates
         for label in linesInfo:
             chart.add(label, linesInfo[label])
-        self.save_or_display_chart(chart)
+        self.save_or_display_chart(chart, title)
 
     def render_cpu_ram_chart(self, server):
         self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total

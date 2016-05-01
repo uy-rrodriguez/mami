@@ -109,16 +109,16 @@ class WindowStats(Window):
 
     def render_options(self):
         title = "Graphiques  "
-        y = self.dims[Y] - len(self.options) - 1
+        y = self.dims[self.Y] - len(self.options) - 1
         x = self.minx + len(title)
         self.move(y, self.minx)
         self._print(title)
 
         for i in range(0, len(self.options)):
             self.move(y+i, x)
-            color = COLOR_NOSELECTED
+            color = self.COLOR_NOSELECTED
             if i == self.selected and self.hasFocus:
-                color = COLOR_SELECTED
+                color = self.COLOR_SELECTED
             self.println("{:25s}".format("[ " + self.options[i][OPTION_LABEL]) + "]", color)
 
 

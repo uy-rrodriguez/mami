@@ -89,23 +89,21 @@ class WindowProcess(Window):
                 p["ram"] += 2.0005
 
     def render(self):
-        width = self.dims[X] - 2*self.minx
+        width = self.dims[self.X] - 2*self.minx
         frmt = "{:" + str(width) + "s}"
 
         self.clear()
-        self.println(frmt.format("Liste de processus greedy"), COLOR_TITLE)
+        self.println(frmt.format("Liste de processus greedy"), self.COLOR_TITLE)
         self.println();
 
         listPosX = []
-        self._print("pid" + TAB, COLOR_TITLE);             listPosX.append(self.screen.getyx()[X])
-        self._print("command" + TAB + TAB, COLOR_TITLE);   listPosX.append(self.screen.getyx()[X])
-        #self._print("username" + TAB, COLOR_TITLE);        listPosX.append(self.screen.getyx()[X])
-        self._print("CPU %" + TAB, COLOR_TITLE);             listPosX.append(self.screen.getyx()[X])
-        self.println("RAM" + TAB, COLOR_TITLE);            #listPosX.append(self.screen.getyx()[X])
-        #self.println("% RAM", COLOR_TITLE)
+        self._print("pid" + TAB, self.COLOR_TITLE);             listPosX.append(self.screen.getyx()[self.X])
+        self._print("command" + TAB + TAB, self.COLOR_TITLE);   listPosX.append(self.screen.getyx()[self.X])
+        self._print("CPU %" + TAB, self.COLOR_TITLE);           listPosX.append(self.screen.getyx()[self.X])
+        self.println("RAM" + TAB, self.COLOR_TITLE);
 
         for x in range(width):
-            self.screen.addch(curses.ACS_HLINE, curses.color_pair(COLOR_TITLE))
+            self.screen.addch(curses.ACS_HLINE, curses.color_pair(self.COLOR_TITLE))
         self.println()
 
         i = 0
@@ -117,5 +115,5 @@ class WindowProcess(Window):
             self._print(util.stringify_bytes(p["ram"]));     #self.move(self.posy, listPosX[i]); i=0;
             #self._print(str(p["pram"]))
             self.println()
-            if self.posy > self.screen.getmaxyx()[Y]:
+            if self.posy > self.screen.getmaxyx()[self.Y]:
                 break

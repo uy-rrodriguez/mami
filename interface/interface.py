@@ -22,7 +22,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets.arraydataobject import ArrayDataObject
 from dbaccess import DBAccess
-from windowmenu import WindowMenu
+from windowmenu2 import WindowMenu
 from windowstats import WindowStats
 from windowprocess import WindowProcess
 
@@ -60,8 +60,7 @@ class Interface:
         hProcs = max(MIN_HEIGHT_PROCS, h)
         self.pad = curses.newpad(h + hProcs, w*2)
 
-        self.menu = WindowMenu(self, self.pad, h, w, 0, 0)
-
+        self.menu = WindowMenu(self, self.pad, h, w, 0, 0, self.db)
         self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
         self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0, self.db)
         self.windows = [self.menu, self.stats, self.procs]
@@ -70,7 +69,6 @@ class Interface:
         self.focused = 0
 
         # Initialisation du menu
-        self.menu.set_servers(self.load_servers())
         self.menu.focus()
 
 
@@ -95,22 +93,7 @@ class Interface:
         curses.endwin()                    # Restore the terminal to its original operating mode
 
 
-# ===========================================  ACCES BD  ========================================== #
-
-    # Lit la base de donnés pour récupérer les serveurs
-    # ...
-    def load_servers(self):
-        servers = []
-        for elem in self.db.get_all("server"):
-            s = ArrayDataObject()
-            s.name = elem["name"]
-            s.ip = elem["ip"]
-            s.uptime = elem["uptime"]
-            servers.append(s)
-        return servers
-
-    def load_server_greedies(self):
-        pass
+# =================================== COMMUNICATION ENTRE FENETRES ================================ #
 
     def change_server(self, server):
         self.stats.change_server(server)

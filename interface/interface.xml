@@ -14,16 +14,11 @@ Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que gen
     </main>
     <windows>
         <win_servers>
+            <title>Serveurs</title>
             <text>
-Serveurs
---------
 Voici la liste de tous les serveurs existants dans la base de donnees.
 Veuillez bien selectionner un pour afficher les stats.
             </text>
-            <servers></servers>
-            <links>
-                <main>Retour accueil</main>
-            </links>
         </win_servers>
         <win_crises>
             <title>Gestion de crises</title>

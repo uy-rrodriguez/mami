@@ -15,14 +15,14 @@ import sys
 #    Window.                                                                #
 #############################################################################
 
-Y = 0
-X = 1
-COLOR_SELECTED = 1
-COLOR_NOSELECTED = 0
-COLOR_TITLE = 2
-COLOR_TABLE = 3
-
 class Window(object):
+    Y = 0
+    X = 1
+    COLOR_SELECTED = 1
+    COLOR_NOSELECTED = 0
+    COLOR_TITLE = 2
+    COLOR_TABLE = 3
+
     boxV = 0
     boxH = 0
 
@@ -39,10 +39,10 @@ class Window(object):
         self.hasFocus = False
 
         # Initializing colors
-        curses.init_pair(COLOR_SELECTED, curses.COLOR_WHITE, curses.COLOR_BLUE);
-        curses.init_pair(COLOR_NOSELECTED, curses.COLOR_WHITE, -1);
-        curses.init_pair(COLOR_TITLE, curses.COLOR_CYAN, -1);
-        curses.init_pair(COLOR_TABLE, curses.COLOR_BLACK, curses.COLOR_WHITE);
+        curses.init_pair(self.COLOR_SELECTED, curses.COLOR_WHITE, curses.COLOR_BLUE);
+        curses.init_pair(self.COLOR_NOSELECTED, curses.COLOR_WHITE, -1);
+        curses.init_pair(self.COLOR_TITLE, curses.COLOR_CYAN, -1);
+        curses.init_pair(self.COLOR_TABLE, curses.COLOR_BLACK, curses.COLOR_WHITE);
 
     def handle_key(self, key):
         pass
