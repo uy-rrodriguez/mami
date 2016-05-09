@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <style>
+            * {
+                font-family: Verdana, sans-serif;
+            }
+            table {
+                padding-bottom: 20px;
+                border-radius: 20px;
+                border: 1px solid #9775c3;
+            }
+
+            thead th {
+                padding: 6px;
+                border-radius: 20px 20px 0px 0px;
+                background: #9775c3;
+            }
+
+            tbody th {
+                text-align: center;
+            }
+
+            tbody th img {
+                display: block;
+                max-width: 200px;
+            }
+
+            tbody th a {
+                display: block;
+                font-size: 11px;
+                font-weight: normal;
+            }
+
+            h1 {
+                display: block;
+                margin: 0px;
+                text-align: center;
+                font-size: 22px;
+                font-weight: bold;
+                /*color: #5d247a;*/
+                /*background: #895aa9;*/
+                color: #FFF;
+            }
+            h2 {
+                display: block;
+                padding: 10px;
+                font-size: 17px;
+                font-weight: normal;
+                color: #6c69b4;
+                background: #d9d2f8;
+                border-radius: 20px 0px 0px 20px;
+            }
+            h3 {
+                font-size: 15px;
+                font-weight: normal;
+                color: #777;
+            }
+
+            p.espace-v {
+                margin-top: 30px;
+            }
+
+            p {
+                font-size: 13px;
+                margin: 5px 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        <h1>Mami t'informe</h1>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>
+                        <img src="https://github.com/uy-rrodriguez/mami/raw/master/mami.png" alt="mami" />
+                        <a class="note-img" href="https://github.com/uy-rrodriguez/mami" target="blank">Suis-moi sur Github</a>
+                    </th>
+                    <td>
+                        <h2>Bonjour! C'est mami, je viens vers toi pour vous informer d'une situation de crise.</h2>
+                        <h3>Mais ne t'inquiètes pas, ensemble on va la résoudre. Mami sera toujours là pour toi.</h3>
+
+                        <p class="espace-v"></p>
+                        <p>
+                            Les sondes ont detecté la situation suivante dans le serveur
+                            <span id="nom-serveur"><!--var:server.name--> (<!--var:server.ip-->)</span>&nbsp;:
+                        </p>
+                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
+                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
+                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
+                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
+                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
+
+                        <p>Vas-y mon grand! Il faut arrêter les conneries et se mettre à bosser. :D</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
