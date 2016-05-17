@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <crisis>
+        <max_cpu>90</max_cpu>
+        <max_ram>70</max_ram>
+        <max_disk>80</max_disk>
+    </crisis>
+    <email>
+        <address>rr.ricci@gmail.com</address>
+        <template>mail_template.xml</template>
+    </email>
+</configuration>
