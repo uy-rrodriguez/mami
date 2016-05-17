@@ -7,7 +7,7 @@
     </crisis>
     <email>
         <address>rr.ricci@gmail.com</address>
-        <template>mail_template.xml</template>
-        <subject>Mami a detecte une situation de crise</subject>
+        <template>mail_template.xm</template>
+        <subject>Mami vient de detecter une crise</subject>
     </email>
 </configuration>

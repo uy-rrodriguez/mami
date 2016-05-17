@@ -35,6 +35,7 @@ Y = 0
 X = 1
 MIN_HEIGHT = 20
 MIN_HEIGHT_PROCS = 15
+HEIGHT_FOOT = 1
 MIN_WIDTH = 120
 KEY_CHANGE_WIN = 9    # TAB
 
@@ -61,7 +62,7 @@ class Interface:
 
         self.menu = WindowMenu(self, self.pad, h, w, 0, 0, self.db)
         self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
-        self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0, self.db)
+        self.procs = WindowProcess(self, self.pad, hProcs - HEIGHT_FOOT, w*2, h, 0, self.db)
         self.windows = [self.menu, self.stats, self.procs]
         self.focus_windows = [self.menu, self.stats]
 
@@ -129,7 +130,13 @@ class Interface:
         for w in self.windows:
             w.render()
 
+        # Get max dimensions
         dims = self.stdscr.getmaxyx()
+
+        # Render the foot, with info about the command keys
+        self.stdscr.addstr(dims[Y]-1, 0, "[Tab] Changer de fenetre (gauche ou droite) \t [Entrer] Accepter/Choisir option \t [F12] Sortir")
+
+        # Refresh screen
         self.pad.noutrefresh(0, 0, 0, 0, dims[Y]-1, dims[X]-1)
         #curses.doupdate()
 

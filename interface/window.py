@@ -23,13 +23,15 @@ class Window(object):
     COLOR_TITLE = 2
     COLOR_TABLE = 3
 
-    boxV = 0
-    boxH = 0
+    #boxV = 0
+    #boxH = 0
 
     def __init__(self, interface, parent, height, width, y, x):
         self.interface = interface
         self.parent = parent
+        self.border = parent.subwin(height, width, y, x)
         self.screen = parent.subwin(height, width, y, x)
+
         #self.screen.scrollok(True)
         #self.screen.idlok(True)
         self.topleft = (y, x)
@@ -69,7 +71,9 @@ class Window(object):
 
     def clear(self):
         self.screen.erase()
-        self.screen.box(self.boxV, self.boxH)
+        #self.screen.border(0)
+        self.border.border(0)
+        #self.screen.box(self.boxV, self.boxH)
         self.move(self.miny, self.minx)
 
     def move(self, y, x):
@@ -80,11 +84,24 @@ class Window(object):
         except:
             pass
 
-    def _print(self, text="", color=None, pos=None):
+    def _print(self, ligne="", color=None, pos=None):
+        # Conversion de chiffres à string, et traitement de strings en UTF8.
+        text = ligne
         if type(text) is unicode:
             text = bytes(text.encode('utf-8'))
         elif not type(text) is str:
             text = str(text)
+
+        # Curses ajoute un deuxième byte pour chaque caractère ASCII-extended.
+        # Pour éviter des problèmes d'affichage, on ajoute un espace à la fin pour
+        # chacun de ces caractères.
+        #count = 0;
+        #for i in range(len(ligne)):
+        #    if ord(ligne[i]) > 128:
+        #        count += 1
+        #text += '' * count
+
+        # Affichage du texte
         try:
             if color == None:
                 if pos == None:

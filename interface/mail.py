@@ -20,14 +20,14 @@ from email.mime.text import MIMEText
 
 class Mail:
     FROM = "uyric.gm@gmail.com"
+    PWD = "uyric9090"
     TO = "rr.ricci@gmail.com"
-    #TO = "peupette@gmail.com"
 
     def __init__(self):
         self.smtp = smtplib.SMTP("smtp.gmail.com", "587")
         self.smtp.ehlo()
         self.smtp.starttls()
-        self.smtp.login(self.FROM, "uyric9090")
+        self.smtp.login(self.FROM, self.PWD)
 
     def send(self, subject):
         # On ouvre le fichier template
