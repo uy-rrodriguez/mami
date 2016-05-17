@@ -22,7 +22,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets.arraydataobject import ArrayDataObject
 from dbaccess import DBAccess
-from windowmenu2 import WindowMenu
+from windowmenu import WindowMenu
 from windowstats import WindowStats
 from windowprocess import WindowProcess
 
@@ -36,7 +36,6 @@ X = 1
 MIN_HEIGHT = 20
 MIN_HEIGHT_PROCS = 15
 MIN_WIDTH = 120
-KEY_QUIT = ord("q")
 KEY_CHANGE_WIN = 9    # TAB
 
 
@@ -64,6 +63,7 @@ class Interface:
         self.stats = WindowStats(self, self.pad, h, w, 0, w, self.db)
         self.procs = WindowProcess(self, self.pad, hProcs, w*2, h, 0, self.db)
         self.windows = [self.menu, self.stats, self.procs]
+        self.focus_windows = [self.menu, self.stats]
 
         # Focus de la fenetre principale
         self.focused = 0
@@ -109,15 +109,15 @@ class Interface:
         try: self.stdscr.getstr()
         except: pass
 
-        if k == KEY_QUIT:
+        if k == curses.KEY_F12:
             return False
 
         elif k == KEY_CHANGE_WIN:
-            self.windows[self.focused].unfocus()
-            self.focused = (self.focused + 1) % len(self.windows)
-            self.windows[self.focused].focus()
-        else:
-            self.windows[self.focused].handle_key(k)
+            self.focus_windows[self.focused].unfocus()
+            self.focused = (self.focused + 1) % len(self.focus_windows)
+            self.focus_windows[self.focused].focus()
+        elif k >= 0:
+            self.focus_windows[self.focused].handle_key(k)
 
         return True
 

@@ -17,6 +17,8 @@ import util
 from objets.arraydataobject import ArrayDataObject
 from graphs import Graphs
 from window import *
+from config import *
+from mail import *
 
 
 #############################################################################
@@ -39,6 +41,9 @@ class WindowStats(Window):
 
         self.lastUpdate = None
 
+        # Configuration
+        self.config = Config()
+
         # Connexion BD
         self.db = dataBaseInstance
 
@@ -54,6 +59,7 @@ class WindowStats(Window):
     def change_server(self, server):
         self.server = server
         self.update_data()
+        self.detect_crisis()
 
     def update_data(self):
         self.lastDate = self.db.get_last_date(self.server.name).next()[0]
@@ -83,6 +89,14 @@ class WindowStats(Window):
             self.disks.append(d)
 
         self.lastUpdate = time.time()
+
+    def detect_crisis(self):
+        maxCPU = self.config.get("crisis/max_cpu")
+        maxRAM = self.config.get("crisis/max_ram")
+        maxDisk = self.config.get("crisis/max_disk")
+        if (self.cpu.used >= maxCPU
+            or (self.ram.used * 100 / self.ram.total) >= maxRAM):
+            Mail().send("TEST ALERT : " + self.config.get("email/subject"))
 
 
     def handle_key(self, key):

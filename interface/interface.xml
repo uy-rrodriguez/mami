@@ -27,7 +27,7 @@ Vous pouvez configurer certains parametres pour detecter des crises.
 Accedez aux differentes options pour definir vos situations de crise.
             </text>
             <links>
-                <win_crises_params>Modifier CPU, memoire et disques</win_crises_params>
+                <win_config_crises>Modifier CPU, memoire et disques</win_config_crises>
                 <main>Retour accueil</main>
             </links>
         </win_crises>
@@ -38,8 +38,7 @@ Le systeme envoie automatiquement des emails pour vous prevenir de situations de
 Ici vous pouvez configurer les parametres des messages ainsi que leur contenu.
             </text>
             <links>
-                <win_emails_addr>Configurer adresses</win_emails_addr>
-                <win_emails_temp>Templates</win_emails_temp>
+                <win_config_emails>Configurer adresses et template</win_config_emails>
                 <win_emails_test>Envoyer email de test</win_emails_test>
                 <main>Retour accueil</main>
             </links>

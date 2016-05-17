@@ -1,49 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <crisis>
-        <max_cpu>90</max_cpu>
-        <max_ram>70</max_ram>
-        <max_disk>80</max_disk>
+        <max_cpu>1</max_cpu>
+        <max_ram>7</max_ram>
+        <max_disk>8</max_disk>
     </crisis>
     <email>
         <address>rr.ricci@gmail.com</address>
-        </win_servers>
-            <text>
-Serveurs
---------
-Voici la liste de tous les serveurs existants dans la base de donnees.
-Veuillez bien selectionner un pour afficher les stats.
-            </text>
-            <servers></servers>
-            <links>
-                <main>Retour accueil</main>
-            </links>
-        </win_servers>
-        <win_crises>
-            <text>
-Gestion de crises
------------------
-Vous pouvez configurer certains parametres pour detecter des crises.
-Accedez aux differentes options pour definir vos situations de crise.
-            </text>
-            <links>
-                <win_crises_params>Modifier CPU, memoire et disques</win_crises_params>
-                <main>Retour accueil</main>
-            </links>
-        </win_crises>
-        <win_emails>
-            <text>
-Gestion de mailing
-------------------
-Le systeme envoie automatiquement des emails pour vous prevenir de situations de crise.
-Ici vous pouvez configurer les parametres des messages ainsi que leur contenu.
-            </text>
-            <links>
-                <win_emails_addr>Configurer adresses</win_emails_addr>
-                <win_emails_temp>Templates</win_emails_temp>
-                <win_emails_test>Envoyer email de test</win_emails_test>
-                <main>Retour accueil</main>
-            </links>
-        </win_emails>
+        <template>mail_template.xml</template>
+        <subject>Mami a detecte une situation de crise</subject>
     </email>
 </configuration>
