@@ -14,7 +14,7 @@
 #############################################################################
 
 import curses
-#import sys
+import os
 import random
 
 from os import sys, path
@@ -77,6 +77,7 @@ class Interface:
         self.end_curse()
 
     def init_curse(self):
+        os.environ.setdefault('ESCDELAY', '25')  # Reducing delay for ESCAPE key
         self.stdscr = curses.initscr()     # Init curses
         self.stdscr.keypad(1)              # Enable keypad mode (handle keys with curses.KEY_LEFT, etc).
         self.stdscr.nodelay(True)
@@ -134,7 +135,8 @@ class Interface:
         dims = self.stdscr.getmaxyx()
 
         # Render the foot, with info about the command keys
-        self.stdscr.addstr(dims[Y]-1, 0, "[Tab] Changer de fenetre (gauche ou droite) \t [Entrer] Accepter/Choisir option \t [F12] Sortir")
+        self.stdscr.addstr(dims[Y]-1, 0,
+            "[Tab] Changer de fenêtre \t [Entrer] Accepter \t [Esc] Retourner \t [F12] Sortir")
 
         # Refresh screen
         self.pad.noutrefresh(0, 0, 0, 0, dims[Y]-1, dims[X]-1)

@@ -18,10 +18,11 @@ import sys
 class Window(object):
     Y = 0
     X = 1
-    COLOR_SELECTED = 1
     COLOR_NOSELECTED = 0
+    COLOR_SELECTED = 1
     COLOR_TITLE = 2
-    COLOR_TABLE = 3
+    COLOR_BORDER = 3
+    COLOR_DEFAULT = 4
 
     #boxV = 0
     #boxH = 0
@@ -29,8 +30,8 @@ class Window(object):
     def __init__(self, interface, parent, height, width, y, x):
         self.interface = interface
         self.parent = parent
-        self.border = parent.subwin(height, width, y, x)
         self.screen = parent.subwin(height, width, y, x)
+        self.border = parent.subwin(height, width, y, x)
 
         #self.screen.scrollok(True)
         #self.screen.idlok(True)
@@ -44,18 +45,10 @@ class Window(object):
         curses.init_pair(self.COLOR_SELECTED, curses.COLOR_WHITE, curses.COLOR_BLUE);
         curses.init_pair(self.COLOR_NOSELECTED, curses.COLOR_WHITE, -1);
         curses.init_pair(self.COLOR_TITLE, curses.COLOR_CYAN, -1);
-        curses.init_pair(self.COLOR_TABLE, curses.COLOR_BLACK, curses.COLOR_WHITE);
+        curses.init_pair(self.COLOR_BORDER, curses.COLOR_BLUE, -1);
 
     def handle_key(self, key):
         pass
-        """
-        if key == curses.KEY_DOWN and self.selected < len(self.links) - 1:
-            self.selected += 1
-        elif key == curses.KEY_UP and self.selected > 0:
-            self.selected -= 1
-        elif key == 10 and self.selected >= 0:
-            self.changeMenu = True
-        """
 
     def update(self):
         pass
@@ -65,13 +58,14 @@ class Window(object):
 
     def unfocus(self):
         self.hasFocus = False
+        self.border.bkgd(' ', curses.color_pair(self.COLOR_NOSELECTED))
 
     def focus(self):
         self.hasFocus = True
+        self.border.bkgd(' ', curses.color_pair(self.COLOR_BORDER))
 
     def clear(self):
         self.screen.erase()
-        #self.screen.border(0)
         self.border.border(0)
         #self.screen.box(self.boxV, self.boxH)
         self.move(self.miny, self.minx)

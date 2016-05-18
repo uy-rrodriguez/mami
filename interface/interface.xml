@@ -3,7 +3,7 @@
     <main>
         <title>Menu principal</title>
         <text>
-Bienvenu a l'interface d'administration de serveurs.
+Bienvenue a l'interface d'administration de serveurs.
 Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que generer des graphes a partir de l'historique.
         </text>
         <links>

@@ -37,6 +37,7 @@ class BaseState():
 
     # Touches
     KEY_ENTER = 10
+    KEY_ESCAPE = 27
     KEY_BACKSPACE = 263
 
     def __init__(self, context):
@@ -105,7 +106,7 @@ class BaseMenuState(BaseState):
         elif key == curses.KEY_UP and self.selected > 0:
             self.selected -= 1
 
-        elif key == self.KEY_BACKSPACE:
+        elif key == self.KEY_ESCAPE:
             self.load_menu("main")
 
         elif key == self.KEY_ENTER:
@@ -197,6 +198,9 @@ class ServersState(BaseState):
             else:
                 self.context.select_server(self.servers[self.selected])
 
+        elif key == self.KEY_ESCAPE:
+            self.back_to_menu()
+
     def back_to_menu(self):
         BaseMenuState.instance(self.context).change_to()
 
@@ -267,6 +271,11 @@ class BaseConfigState(BaseState):
         # Les autres touches sont pour écrire dans l'élement choisi
         if key == self.KEY_ENTER:
             self.save_config()
+            self.__class__.inst = None
+            BaseMenuState.instance(self.context).change_to()
+
+        elif key == self.KEY_ESCAPE:
+            self.__class__.inst = None
             BaseMenuState.instance(self.context).change_to()
 
         elif key == curses.KEY_DOWN and self.selected < len(self.params) - 1:
@@ -347,7 +356,7 @@ class ConfigEmailTestState(BaseConfigState):
     def __init__(self, context):
         super(ConfigEmailTestState, self).__init__(context,
                                                 "Test d'envoie d'un email en cas de crise",
-                                                "Cliquez [Entrer] pour envoyer un email de test.")
+                                                "Tapez [Entrer] pour envoyer un email de test. \n Tapez [Esc] pour retourner au menu.")
         self.error = ""
 
     def handle_key(self, key):
@@ -362,7 +371,7 @@ class ConfigEmailTestState(BaseConfigState):
             except Exception as e:
                 self.error = e
 
-        elif key == self.KEY_BACKSPACE:
+        elif key == self.KEY_ESCAPE:
             BaseMenuState.instance(self.context).change_to()
 
     def render(self):

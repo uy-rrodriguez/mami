@@ -2,8 +2,8 @@
 <configuration>
     <crisis>
         <max_cpu>1</max_cpu>
-        <max_ram>7</max_ram>
-        <max_disk>8</max_disk>
+        <max_ram>1</max_ram>
+        <max_disk>1</max_disk>
     </crisis>
     <email>
         <address>rr.ricci@gmail.com</address>

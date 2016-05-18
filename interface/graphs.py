@@ -35,11 +35,18 @@ class Graphs:
         return dt.strftime("%d-%m-%Y %H:%M:%S")
 
     def create_html(self, chart, fileName):
-        content = chart.render_data_uri()
+        # On crée le fivhier svg qu'on va inclure dans une page HTML
+        fname = 'tmp/chart.svg'
+        chart.render_to_file(fname)
+        f = open(fname, "r")
+        content = f.read()
+        f.close()
+
+        # On crée un page HTML
         pathHTML = "tmp/chart.html"
         f = open(pathHTML, "w")
         f.write("""<html><head><title>""" + fileName + """</title></head><body>
-                       <embed width='100%' height='100%' src='""" + content + """'/>
+                       <svg width='100%' height='100%'>""" + content + """</svg>
                 </body></html>""")
         f.close()
         return pathHTML
