@@ -66,11 +66,17 @@
 #############################################################################
 #    Webservice. Classe principale du module.                               #
 #############################################################################
+from flask import Flask
 
 
 class Webservice:
     def __init__(self):
-        print "Webservice";
+
+	    self.app = Flask(__name__)
+
+    	    @self.app.route("/")
+   	    def hello():
+   		return "Hello World!"
 
 
 
@@ -79,7 +85,8 @@ class Webservice:
 #############################################################################
 
 def main():
-    Webservice()
+    w=Webservice()
+    w.app.run()
 
 if __name__=='__main__':
     main()
