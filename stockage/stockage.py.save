@@ -95,13 +95,13 @@ class Stockage:
                       swap_total, processes_count, zombies_count, users_count) VALUES (?,?,?,?,?,?,?,?,?)""",(str(self.server.name),str(self.cpu.used),str(self.ram.used),str(self.ram.total),str(self.swap.used),str(self.swap.total),str(self.count_p),str(self.count_z),str(self.count_u)))
         #c.executescript("""""")
 
-        pickleusers = sqlite3.Binary(pickle.dumps(self.users,pickle.HIGHEST_PROTOCOL))
+        pickleusers = pickle.dumps(self.users,pickle.HIGHEST_PROTOCOL)
         
-        #c.execute("""INSERT INTO user (users_list)
-                           VALUES (?)""",(sqlite3.Binary(pickleusers)))
+#c.execute("""INSERT INTO user (users_list)
+                           VALUES (:users_list)""",(sqlite3.Binary(pickleusers)))
 
-        pickleprocesses = pickle.dumps(self.processes,pickle.HIGHEST_PROTOCOL)
-        c.executescript("""INSERT INTO process (process) VALUES (?)""",pickleprocesses)
+        #picklestring = pickle.dumps(self.processes,pickle.HIGHEST_PROTOCOL)
+        #c.executescript("""INSERT INTO process (process) VALUES (?)""",pickleprcesse)
         #c.commit     
 	    
 
