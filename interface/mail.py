@@ -19,33 +19,56 @@ from email.mime.text import MIMEText
 #############################################################################
 
 class Mail:
+    HOST = "smtp.gmail.com"
+    PORT = "587"
     FROM = "uyric.gm@gmail.com"
     PWD = "uyric9090"
-    TO = "rr.ricci@gmail.com"
 
     def __init__(self):
-        self.smtp = smtplib.SMTP("smtp.gmail.com", "587")
+        self.smtp = smtplib.SMTP(self.HOST, self.PORT)
         self.smtp.ehlo()
         self.smtp.starttls()
         self.smtp.login(self.FROM, self.PWD)
 
-    def send(self, subject):
-        # On ouvre le fichier template
-        fp = open("mail_template.html", "rb")
-        template = fp.read()
+        # Paramètres qui sont définies en temps d'exécution
+        self.params = {}
+
+
+    # Ajoute un paramètres à remplacer
+    def set_param(self, param, value):
+        self.params[param] = value
+
+    # Remplace tous les paramètres dans le texte par les valeurs stockés dans self.params
+    def replace_params(self, text):
+        for key, value in self.params.items():
+            text = text.replace("<!--var:" + key + "-->", str(value))
+        return text
+
+    def send(self, to, subject, templateHTML="mail_template.html", templateTXT="mail_template.txt"):
+        # On ouvre le fichier template HTML
+        fp = open(templateHTML, "rb")
+        templateHTML = fp.read()
         fp.close()
 
-        msg = MIMEMultipart('alternative')
+        # On ouvre le fichier template TXT
+        fp = open(templateTXT, "rb")
+        templateTXT = fp.read()
+        fp.close()
 
-        msg.attach(MIMEText(template, 'plain'))
-        msg.attach(MIMEText(template, 'html'))
+        # Remplacement des paramètres
+        templateHTML = self.replace_params(templateHTML)
+        templateTXT = self.replace_params(templateTXT)
+
+        msg = MIMEMultipart('alternative')
+        msg.attach(MIMEText(templateTXT, 'plain'))
+        msg.attach(MIMEText(templateHTML, 'html'))
 
         msg['Subject'] = subject
         msg['From'] = self.FROM
-        msg['To'] = self.TO
+        msg['To'] = to
 
         # On envoie via SMTP
-        self.smtp.sendmail(self.FROM, [self.TO], msg.as_string())
+        self.smtp.sendmail(self.FROM, [to], msg.as_string())
 
     def __destroy__(self):
         self.smtp.quit()

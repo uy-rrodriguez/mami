@@ -18,6 +18,9 @@ class Config:
     PATH_CONFIG = "config.xml"
 
     def __init__(self):
+        self.recharger()
+
+    def recharger(self):
         f = open(self.PATH_CONFIG, "r")
         self.config_root = ET.fromstring(f.read())
         f.close()

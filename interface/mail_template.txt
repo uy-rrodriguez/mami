@@ -1,0 +1,11 @@
+Mami t'informe
+--------------
+
+Bonjour! C'est mami, je viens vers toi pour t'informer d'une situation de crise.
+Mais ne t'inquiètes pas, ensemble on va la résoudre. Mami sera toujours là pour toi.
+
+Les sondes ont detecté la situation suivante dans le serveur <!--var:server.name--> (<!--var:server.ip-->) :
+Utilisation CPU : <!--var:cpu.used--> %
+Utilisation RAM : <!--var:ram.percent--> %
+Utilisation Swap : <!--var:swap.percent--> %
+Utilisation Disques : <!--var:disks.percent--> %

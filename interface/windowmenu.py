@@ -338,9 +338,10 @@ class ConfigCrisisState(BaseConfigState):
     def __init__(self, context):
         super(ConfigCrisisState, self).__init__(context,
             "Configuration des situations de crise",
-            "Ici, vous pouvez configurer vos situations de crise.")
+            "Ici, vous pouvez configurer vos situations de crise. Chaque valeur correspond au pourcentage maximal tolere.")
         self.params = [ParamConfig("crisis/max_cpu", self.config.get("crisis/max_cpu"), "Max. CPU"),
                        ParamConfig("crisis/max_ram", self.config.get("crisis/max_ram"), "Max. RAM"),
+                       ParamConfig("crisis/max_swap", self.config.get("crisis/max_swap"), "Max. swap"),
                        ParamConfig("crisis/max_disk", self.config.get("crisis/max_disk"), "Max. disque")]
 
 class ConfigEmailState(BaseConfigState):

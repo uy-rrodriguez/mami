@@ -7,7 +7,6 @@
                 font-family: Verdana, sans-serif;
             }
             table {
-                padding-bottom: 20px;
                 border-radius: 20px;
                 border: 1px solid #9775c3;
             }
@@ -31,6 +30,10 @@
                 display: block;
                 font-size: 11px;
                 font-weight: normal;
+            }
+
+            td {
+                padding: 2px 5px;
             }
 
             h1 {
@@ -58,13 +61,9 @@
                 color: #777;
             }
 
-            p.espace-v {
-                margin-top: 30px;
-            }
-
             p {
                 font-size: 13px;
-                margin: 5px 0px;
+                margin: 5px 0px 25px 0px;
             }
         </style>
     </head>
@@ -87,18 +86,35 @@
                         <h2>Bonjour! C'est mami, je viens vers toi pour t'informer d'une situation de crise.</h2>
                         <h3>Mais ne t'inquiètes pas, ensemble on va la résoudre. Mami sera toujours là pour toi.</h3>
 
-                        <p class="espace-v"></p>
                         <p>
                             Les sondes ont detecté la situation suivante dans le serveur
                             <span id="nom-serveur"><!--var:server.name--> (<!--var:server.ip-->)</span>&nbsp;:
                         </p>
-                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
-                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
-                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
-                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
-                        <p>CPU&nbsp;: <!--var:cpu.used--></p>
 
-                        <p>Vas-y mon grand! Il faut arrêter les conneries et se mettre à bosser. :D</p>
+                        <p>
+                            <table style="display: block; border-radius: 10px;">
+                                <tr>
+                                    <th style="min-width: 100px;"></th>
+                                    <th style="text-align: left;">Utilisation</th>
+                                </tr>
+                                <tr>
+                                    <td>CPU</td>
+                                    <td><!--var:cpu.used--> %</td>
+                                </tr>
+                                <tr>
+                                    <td>RAM</td>
+                                    <td><!--var:ram.percent--> %</td>
+                                </tr>
+                                <tr>
+                                    <td>Swap</td>
+                                    <td><!--var:swap.percent--> %</td>
+                                </tr>
+                                <tr>
+                                    <td>Disques</td>
+                                    <td><!--var:disks.percent--> %</td>
+                                </tr>
+                            </table>
+                        </p>
                     </td>
                 </tr>
             </tbody>
