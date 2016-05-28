@@ -44,9 +44,7 @@ class Requeteur(object):
     def __init__(self):
 
     def post_xml(self,file):
-        xml = open(file, "r")
-        headers = {'Content-Type': 'application/xml'}
-        requests.post(URL, data=xml, headers=headers)
+        requests.post(URL+"upload", files={'data.xml': open(file, 'rb')})
 
 
 #############################################################################
