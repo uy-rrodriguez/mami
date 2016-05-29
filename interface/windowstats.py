@@ -24,7 +24,7 @@ from mail import *
 #    WindowStats                                                            #
 #############################################################################
 
-UPDATE_INTERVAL = 30 # sec
+UPDATE_INTERVAL = 5 # sec
 OPTION_LABEL = 0
 OPTION_ACTION = 1
 
@@ -61,14 +61,12 @@ class WindowStats(Window):
 
     # Fonction qui cherche dans la BDD les données associées au serveur sélecctionné
     def update_data(self):
+        # Récupération de la dernière date disponible
         self.lastDate = self.db.get_last_date(self.server.name).next()[0]
-        res = self.db.get_by_fields("stat",
-                                    ["server_name", "date"],
-                                    [self.server.name, self.lastDate]).next()
 
-        resDisks = self.db.get_by_fields("statDisk",
-                                         ["server_name", "date"],
-                                         [self.server.name, self.lastDate])
+        res = self.db.get_by_fields("stat",
+                                    ["server_name", "timestamp"],
+                                    [self.server.name, self.lastDate]).next()
 
         self.cpu = ArrayDataObject();
         self.cpu.used = float(res["cpu_used"])
@@ -78,6 +76,11 @@ class WindowStats(Window):
         self.swap = ArrayDataObject();
         self.swap.total = int(res["swap_total"]);
         self.swap.used = float(res["swap_used"])
+
+
+        resDisks = self.db.get_by_fields("statDisk",
+                                         ["server_name", "timestamp"],
+                                         [self.server.name, self.lastDate])
 
         self.disks = []
         for line in resDisks:
@@ -137,8 +140,10 @@ class WindowStats(Window):
         self.clear()
         if self.server != None:
             self.println(self.server.name + "  (" + self.server.ip + ")\t Uptime: " + self.server.uptime)
-            self.println("Derniere date: " + self.lastDate)
+            formatedDate = time.strftime("%d/%m/%Y %H:%M", time.localtime(self.lastDate))
+            self.println("Derniere date: " + formatedDate)
             self.println()
+
             self.println("CPU: " + "{:.1f}".format(self.cpu.used) + "%")
             self._print("RAM: total " + util.stringify_bytes(self.ram.total))
             self.println("\t\t utilise " + "{:.1%}".format(self.ram.used / self.ram.total))

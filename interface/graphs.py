@@ -92,14 +92,14 @@ class Graphs:
 
     # Évolution du CPU et de la mémoire dans le temps
     def render_cpu_ram_chart(self, server):
-        self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+        self.db.execute("""SELECT timestamp, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
         info = self.db.fetchall()
         dates, cpu, ram, swap = [], [], [], []
 
         for line in info:
-            dates.append(line["date"])
+            dates.append(line["timestamp"])
             cpu.append(line["cpu_used"])
             ram.append(line["ram_used"] * 100 / line["ram_total"])
             swap.append(line["swap_used"] * 100 / line["swap_total"])
@@ -112,14 +112,14 @@ class Graphs:
 
     # Nombre de processus par rapport aux utilisateur connectés
     def render_users_process_chart(self, server):
-        self.db.execute("""SELECT date, users_count, processes_count, zombies_count
+        self.db.execute("""SELECT timestamp, users_count, processes_count, zombies_count
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
         info = self.db.fetchall()
         dates, users, procs, zombies = [], [], [], []
 
         for line in info:
-            dates.append(line["date"])
+            dates.append(line["timestamp"])
             users.append(line["users_count"])
             procs.append(line["processes_count"])
             zombies.append(line["zombies_count"])
@@ -131,10 +131,10 @@ class Graphs:
 
     # Évolution de l'utilisation de disque dans le temps
     def render_disks_use_chart(self, server):
-        self.db.execute("""SELECT DISTINCT(date)
+        self.db.execute("""SELECT DISTINCT(timestamp)
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
-        dates = [ res["date"] for res in self.db.fetchall() ]
+        dates = [ res["timestamp"] for res in self.db.fetchall() ]
 
         self.db.execute("""SELECT DISTINCT(mnt)
                                FROM statDisk
@@ -143,9 +143,9 @@ class Graphs:
         infoDisks = {}
 
         for disk in disks:
-            self.db.execute("""SELECT stat.date, used, total
+            self.db.execute("""SELECT stat.timestamp, used, total
                                    FROM stat
-                                       LEFT OUTER JOIN statDisk USING (server_name, date)
+                                       LEFT OUTER JOIN statDisk USING (server_name, timestamp)
                                    WHERE server_name = ? AND mnt = ?""",
                                    [server, disk])
             info = self.db.fetchall()
@@ -164,7 +164,7 @@ class Graphs:
 
     # Données d'un seul disque
     def render_single_disk_chart(self, dates = []):
-        self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
+        self.db.execute("""SELECT timestamp, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat
                                WHERE server_name LIKE ?""", [server])
         info = self.db.fetchall()
@@ -172,7 +172,7 @@ class Graphs:
         dates, cpu, ram, swap = [], [], [], []
 
         for line in info:
-            dates.append(line["date"])
+            dates.append(line["timestamp"])
             cpu.append(line["cpu_used"])
             ram.append(line["ram_used"] * 100 / line["ram_total"])
             swap.append(line["swap_used"] * 100 / line["swap_total"])

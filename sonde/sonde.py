@@ -24,6 +24,7 @@ from operator import attrgetter
 #sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
+from requester import Requeteur
 
 
 
@@ -32,12 +33,12 @@ from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
 #############################################################################
 
 MAX_GREEDY = 10
-DELAY = 30
+DELAY = 5
 
 # Path et nom de base pour le fichier à générer, par rapport à l'addresse de
 # ce fichier. Après le nom du fichier on ajoutera un suffix (genre, le nom
 # du serveur et le timestamp) plus l'extension xml.
-PATH_OUTPUT = "/../data/data_"
+PATH_OUTPUT = "data/data_"
 
 
 
@@ -198,9 +199,11 @@ class Sonde(object):
         xml = fBase.read()
         fBase.close()
 
-        timestamp = "" #time.strftime("%Y%m%d_%H%M%s", time.localtime())
-        suffix = "" #self.server.name + "_" + timestamp
-        outXML = path.dirname(path.abspath(__file__)) + PATH_OUTPUT + suffix + ".xml"
+        timestamp = time.strftime("%Y%m%d_%H%M%s", time.localtime())
+        suffix = self.server.name + "_" + timestamp
+        #outXML = path.dirname(path.abspath(__file__)) + PATH_OUTPUT + suffix + ".xml"
+        outXML = PATH_OUTPUT + suffix + ".xml"
+
         fOut = open(outXML, "w")
 
         xml = self.cpu.write_objet_xml(xml, "./cpu", ["used"])
@@ -213,12 +216,19 @@ class Sonde(object):
         pseudoProcess = arraydataobject.ArrayDataObject()
         pseudoProcess.count = self.count_processes
         pseudoProcess.zombies = self.count_zombies
-        xml = pseudoProcess.write_objet_xml(xml, "./processes", ["count", "zombies"])
         xml = process.Process.write_list_xml(self.processes, xml, "./processes", ["pid", "command", "username", "cpu", "ram"])
+        xml = pseudoProcess.write_objet_xml(xml, "./processes", ["count", "zombies"])
 
         fOut.write(firstLine)
         fOut.write(xml)
         fOut.close()
+
+
+        # Envoie du fichier XML à travers HTTP au webservice. L'adresse du webservice est configuré
+        # dans la classe Requeteur.
+        #n = Requeteur()
+        #n.post_xml(outXML)
+
 
     def run(self):
         while True:

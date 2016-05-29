@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#PREFIX_ADDR="inet"
-PREFIX_ADDR="inet adr"
+PREFIX_ADDR="inet"
+#PREFIX_ADDR="inet adr"
 
 uname=$(uname -a)
 name=$(echo $uname | cut -f2 -d" ")

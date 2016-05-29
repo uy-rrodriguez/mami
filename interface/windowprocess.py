@@ -9,21 +9,30 @@
 
 import curses
 import time
+import pickle
 
 #from os import sys, path
 #sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import util
 from objets.arraydataobject import ArrayDataObject
+from objets.server import Server
 from window import *
+
+
+
+#############################################################################
+#    Constantes.                                                            #
+##########################################################################
+
+TAB = "\t\t"
+UPDATE_INTERVAL = 30 # sec
+
 
 
 #############################################################################
 #    WindowProcess                                                          #
 #############################################################################
-
-TAB = "\t\t"
-UPDATE_INTERVAL = 30 # sec
 
 class WindowProcess(Window):
     def __init__(self, parent, stdscr, height, width, y, x, dataBaseInstance):
@@ -47,15 +56,18 @@ class WindowProcess(Window):
 
     # Fonction qui cherche dans la BDD les données associées au serveur sélecctionné
     def update_data(self):
-        self.greedies = []
-        req = self.db.get_by_fields("process",
-                                    ["server_name"],
-                                    [self.server.name])
+        # Récupération de la dernière date disponible
+        lastDate = self.db.get_last_date(self.server.name).next()[0]
 
-        res = req.fetchone()
-        if req != None:
-            xml = res["greedy_list"]
-            greediesList = ArrayDataObject.parse_list_xml(xml, ".", ["pid", "cpu", "ram", "command"])
+        self.greedies = []
+        cursor = self.db.get_by_fields("process",
+                                    ["server_name", "timestamp"],
+                                    [self.server.name, lastDate])
+
+        res = cursor.fetchone()
+        if res != None:
+            greediesList = pickle.loads(res["greedy_list"])
+            #greediesList = ArrayDataObject.parse_list_xml(xml, ".", ["pid", "cpu", "ram", "command"])
             for g in greediesList:
                 self.greedies.append({"pid": g.pid,
                                       "command": g.command,

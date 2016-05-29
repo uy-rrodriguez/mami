@@ -13,7 +13,7 @@
 
 import sqlite3
 
-conn = sqlite3.connect('/home/etudiants/inf/uapv1601663/sonde_info.db')
+conn = sqlite3.connect("data/sonde_info.db")
 c = conn.cursor()
 
 c.executescript("""

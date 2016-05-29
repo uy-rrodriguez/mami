@@ -3,7 +3,7 @@
 
 #############################################################################
 #    Stockage :                                                             #
-#        Script création base de donnée                                     #
+#        Script de création de la base de données.                          #
 #                                                                           #
 #                                                                           #
 #                                                                           #
@@ -14,13 +14,17 @@
 import sqlite3
 import os
 
-bd = "/home/nikyasu/mami/data/sonde_info.db"
+bd = "data/sonde_info.db"
+
+# Supression de la BDD actuelle
 try: os.remove(bd)
 except: pass
 
+# Création de la nouvelle BDD
 conn = sqlite3.connect(bd)
 conn.close()
 
+# Connexion à la BDD
 conn = sqlite3.connect(bd)
 c = conn.cursor()
 
@@ -29,7 +33,7 @@ sql = '''
         name VARCHAR(50),
         ip VARCHAR(10),
         uptime VARCHAR(10),
-        timestamp DATE DEFAULT (datetime('now','localtime'))
+        PRIMARY KEY (name)
     )'''
 print sql
 c.execute(sql)

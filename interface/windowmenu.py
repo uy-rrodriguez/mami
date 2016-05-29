@@ -99,6 +99,7 @@ class BaseMenuState(BaseState):
         # Relations entre les options des menus et les états
         self.keys_states = {
             "win_servers":         ServersState,
+            "win_config_db":       ConfigDBState,
             "win_config_crises":   ConfigCrisisState,
             "win_config_emails":   ConfigEmailState,
             "win_emails_test":     ConfigEmailTestState
@@ -341,6 +342,13 @@ class BaseConfigState(BaseState):
 #############################################################################
 #    Classes spécifiques pour les différentes options de configuration.     #
 #############################################################################
+
+class ConfigDBState(BaseConfigState):
+    def __init__(self, context):
+        super(ConfigDBState, self).__init__(context,
+            "Configuration de la BDD",
+            "Ici, vous pouvez configurer le nombre maximal d'enregistrements stockes pour un serveur.")
+        self.params = [ParamConfig("db/max_rows", self.config.get("db/max_rows"), "Max. enregistrements")]
 
 class ConfigCrisisState(BaseConfigState):
     def __init__(self, context):

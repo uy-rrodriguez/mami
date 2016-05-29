@@ -12,4 +12,7 @@
         <template_txt>interface/mail_template.txt</template_txt>
         <subject>Mami vient de detecter une crise</subject>
     </email>
+    <db>
+        <max_rows>10</max_rows>
+    </db>
 </configuration>

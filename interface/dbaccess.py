@@ -12,11 +12,18 @@ import sqlite3
 import sys
 
 
+
+#############################################################################
+#    Constantes.                                                            #
+#############################################################################
+
+PATH = "data/sonde_info.db"
+
+
+
 #############################################################################
 #    DBAccess.                                                              #
 #############################################################################
-
-PATH = "/home/etudiants/inf/uapv1601663/sonde_info.db"
 
 class DBAccess:
     def __init__(self):
@@ -40,7 +47,7 @@ class DBAccess:
         return self.cursor.execute(sql, values)
 
     def get_last_date(self, server):
-        return self.cursor.execute("SELECT MAX(date) FROM stat WHERE server_name = ?", [server])
+        return self.cursor.execute("SELECT MAX(timestamp) FROM stat WHERE server_name = ?", [server])
 
     def execute(self, sql, params = []):
         return self.cursor.execute(sql, params)
