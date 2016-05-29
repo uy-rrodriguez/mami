@@ -61,17 +61,36 @@
         </processes>
     </data>
 '''
-
+UPLOAD_FOLDER = '/'
+ALLOWED_EXTENSIONS = set(['xml'])
 
 #############################################################################
 #    Webservice. Classe principale du module.                               #
 #############################################################################
+from flask import Flask
 
 
 class Webservice:
     def __init__(self):
-        print "Webservice";
+	    self.app = Flask(__name__)
+            app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+    	    @self.app.route("/",methods=['GET', 'POST'])
+   	    def hello():
+   		return "Hello World!"
+            @self.app.route("/upload")
+            def upload_file():
+                if request.method == 'POST':
+                   file = request.files['file']
+                   if file and allowed_file(file.filename):
+                       filename = secure_filename(file.filename)
+                       file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                       return redirect(url_for('uploaded_file',filename=filename))
+                return '''
+                       <!doctype html>
+                       <title>Upload fichier</title>
+                       <h1>upload fichier data.xml</h1>
+                       '''
 
 
 #############################################################################
@@ -79,7 +98,8 @@ class Webservice:
 #############################################################################
 
 def main():
-    Webservice()
+    w=Webservice()
+    w.app.run()
 
 if __name__=='__main__':
     main()

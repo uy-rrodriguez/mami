@@ -14,7 +14,7 @@
 import sqlite3
 import os
 
-bd = "/home/etudiants/inf/uapv1601663/sonde_info.db"
+bd = "/home/nikyasu/mami/data/sonde_info.db"
 try: os.remove(bd)
 except: pass
 
@@ -28,7 +28,8 @@ sql = '''
     CREATE TABLE IF NOT EXISTS server(
         name VARCHAR(50),
         ip VARCHAR(10),
-        uptime VARCHAR(10)
+        uptime VARCHAR(10),
+        timestamp DATE DEFAULT (datetime('now','localtime'))
     )'''
 print sql
 c.execute(sql)
@@ -37,7 +38,7 @@ conn.commit()
 sql = '''
     CREATE TABLE IF NOT EXISTS stat(
         server_name VARCHAR(50),
-        date VARCHAR(10),
+        timestamp DATE DEFAULT (datetime('now','localtime')),
         cpu_used float ,
         ram_used integer,
         ram_total integer,
@@ -47,7 +48,7 @@ sql = '''
         zombies_count integer,
         users_count integer,
         FOREIGN KEY (server_name) REFERENCES server(name),
-        PRIMARY KEY (server_name, date)
+        PRIMARY KEY (server_name, timestamp)
     )'''
 print sql
 c.execute(sql)
@@ -56,12 +57,12 @@ conn.commit()
 sql = '''
     CREATE TABLE IF NOT EXISTS statDisk(
         server_name VARCHAR(50),
-        date VARCHAR(10),
+        timestamp DATE DEFAULT (datetime('now','localtime')),
         mnt VARCHAR(20) ,
         used integer,
         total integer,
-        PRIMARY KEY (server_name, date, mnt)
-        FOREIGN KEY (server_name, date) REFERENCES stat(server_name, date)
+        PRIMARY KEY (server_name, timestamp, mnt)
+        FOREIGN KEY (server_name, timestamp) REFERENCES stat(server_name, date)
     )'''
 print sql
 c.execute(sql)
@@ -69,8 +70,10 @@ conn.commit()
 
 sql = '''
     CREATE TABLE IF NOT EXISTS user(
-        server_name VARCHAR(50) PRIMARY KEY,
-        users_list text,
+        server_name VARCHAR(50) ,
+        users_list BLOB,
+        timestamp DATE DEFAULT (datetime('now','localtime')),
+	PRIMARY KEY (server_name,timestamp)
         FOREIGN KEY (server_name) REFERENCES server(name)
     )'''
 print sql
@@ -79,8 +82,10 @@ conn.commit()
 
 sql = '''
     CREATE TABLE IF NOT EXISTS process(
-        server_name VARCHAR(50) PRIMARY KEY,
-        greedy_list text,
+        server_name VARCHAR(50) ,
+        greedy_list BLOB,
+        timestamp DATE DEFAULT (datetime('now','localtime')),
+	PRIMARY KEY (server_name,timestamp)
         FOREIGN KEY (server_name) REFERENCES server(name)
     )'''
 print sql
