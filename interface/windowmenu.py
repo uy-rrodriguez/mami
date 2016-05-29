@@ -15,8 +15,8 @@
 import curses
 from lxml import etree as ET
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#from os import sys, path
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets.arraydataobject import ArrayDataObject
 from window import *
@@ -32,10 +32,16 @@ from mail import *
 # Abstraite
 import abc
 class BaseState():
+    # metaclasse pour pouvoir définir une classe abstraite
     __metaclass__ = abc.ABCMeta
+
+    # Fichier contenant les messages à afficher dans les menus
+    XML_CONFIG_FILE = "interface/interface.xml"
+
+    # Instance pour gérer le singleton
     inst = None
 
-    # Touches
+    # Touches utiles
     KEY_ENTER = 10
     KEY_ESCAPE = 27
     KEY_BACKSPACE = 263
@@ -44,11 +50,12 @@ class BaseState():
         self.context = context
 
         # Lecture du fichier avec les titres et descriptifs des menus
-        f = open("interface.xml", "r")
+        f = open(self.XML_CONFIG_FILE, "r")
         self.contents = f.read()
         self.root = ET.fromstring(self.contents)
         f.close()
 
+    # Fonction à exécuter pour changer à un état
     def change_to(self):
         self.context.state = self
 
@@ -127,7 +134,7 @@ class BaseMenuState(BaseState):
         self.context.print_long(self.text)
         self.context.println()
 
-        # Render options
+        # Affichage des options
         for i in range(0, len(self.links)):
             if i == self.selected and self.context.hasFocus:
                 self.context.println(self.links[i].label,
@@ -138,6 +145,7 @@ class BaseMenuState(BaseState):
 
         self.context.println()
 
+    # Fonction pour charger l'information d'un menu depuis le fichier XML de configuration
     def load_menu(self, win):
         if win != "main":
             win = "windows/" + win
@@ -254,7 +262,7 @@ class BaseConfigState(BaseState):
         self.params = []
         self.selected = 0
 
-        # Pour imiter le curseur
+        # Pour imiter le curseur pendant qu'on écrit
         self.reset_cursor()
 
         # On charge la configuration actuelle
@@ -351,33 +359,44 @@ class ConfigEmailState(BaseConfigState):
             "Ici, vous pouvez configurer l'adresse email de l'administrateur et le fichier à utiliser comme template.")
         self.params = [ParamConfig("email/address", self.config.get("email/address"), "Adresse email"),
                        ParamConfig("email/subject", self.config.get("email/subject"), "Sujet du message"),
-                       ParamConfig("email/template", self.config.get("email/template"), "Fichier template")]
+                       ParamConfig("email/template_html", self.config.get("email/template_html"), "Fichier template HTML"),
+                       ParamConfig("email/template_txt", self.config.get("email/template_txt"), "Fichier template texte")]
 
 class ConfigEmailTestState(BaseConfigState):
     def __init__(self, context):
         super(ConfigEmailTestState, self).__init__(context,
                                                 "Test d'envoie d'un email en cas de crise",
                                                 "Tapez [Entrer] pour envoyer un email de test. \n Tapez [Esc] pour retourner au menu.")
-        self.error = ""
+        self.msg = ""
+
+    def change_to(self):
+        super(ConfigEmailTestState, self).change_to()
+        self.msg = ""
 
     def handle_key(self, key):
         # [Entrer] envoie un email de test et retourne au menu
         # [Backspace] annule l'envoi et retourne au menu
         if key == self.KEY_ENTER:
-            self.error = ""
+            self.msg = ""
             try:
                 m = Mail()
-                m.send(self.config.get("email/subject"))
-                BaseMenuState.instance(self.context).change_to()
+                m.send(self.config.get("email/address"),
+                       self.config.get("email/subject"),
+                       self.config.get("email/template_html"),
+                       self.config.get("email/template_txt"))
+
+                #BaseMenuState.instance(self.context).change_to()
+                self.msg = "Mail de test envoye"
+
             except Exception as e:
-                self.error = e
+                self.msg = e
 
         elif key == self.KEY_ESCAPE:
             BaseMenuState.instance(self.context).change_to()
 
     def render(self):
         super(ConfigEmailTestState, self).render()
-        self.context.println(self.error, self.context.COLOR_SELECTED)
+        self.context.println(self.msg, self.context.COLOR_SELECTED)
 
 
 #############################################################################
@@ -399,6 +418,10 @@ class WindowMenu(Window):
         else:
             self.load_menu(BASE_WINDOWS + attribs[0])
 
+
+    # Quand on choisit un serveur dans le menu, il faut envoyer un message à
+    # la fenêtre qui affiche les stats, pour qu'elle puisse afficher les
+    # données qui correspondent
     def select_server(self, server):
         self.interface.change_server(server)
 

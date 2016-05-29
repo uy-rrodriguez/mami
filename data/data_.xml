@@ -1,108 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
     <cpu>
-        <used>3.5</used>
+        <used>8.3</used>
     </cpu>
     <ram>
-        <used>3685937152</used>
-        <total>4019658752</total>
+        <used>3887972352</used>
+        <total>4067577856</total>
     </ram>
     <swap>
-        <used>0</used>
-        <total>8589930496</total>
+        <used>1454080</used>
+        <total>1072689152</total>
     </swap>
     <server>
-        <name>ge-st5-114</name>
-        <ip>10.104.33.114</ip>
-        <uptime>2:30</uptime>
+        <name>Ricci-Linux</name>
+        <ip/>
+        <uptime>3:53</uptime>
     </server>
     <disks>
         <disk>
             <mnt>/</mnt>
-            <used>56914669568</used>
-            <total>70417661952</total>
+            <used>19281534976</used>
+            <total>21002973184</total>
         </disk>
         <disk>
-            <mnt>/vbox</mnt>
-            <used>54924849152</used>
-            <total>175444492288</total>
+            <mnt>/media/ricardo/12926750112F1409</mnt>
+            <used>181147594752</used>
+            <total>209374466048</total>
+        </disk>
+        <disk>
+            <mnt>/home</mnt>
+            <used>14506184704</used>
+            <total>47424552960</total>
         </disk>
     </disks>
     <users>
         <user>
-            <uid>1601663</uid>
-            <name>uapv1601663</name>
-            <isroot>0</isroot>
-            <login_time>2016-03-21 08:37</login_time>
+            <uid>1000</uid>
+            <name>ricardo</name>
+            <isroot>1</isroot>
+            <login_time>2016-05-29 12:35</login_time>
         </user>
     </users>
     <processes>
         <process>
-            <pid>4040</pid>
+            <pid>14611</pid>
+            <command>python</command>
+            <username>ricardo</username>
+            <cpu>101.7</cpu>
+            <ram>17358848</ram>
+        </process>
+        <process>
+            <pid>2706</pid>
             <command>firefox</command>
-            <username>uapv1601663</username>
-            <cpu>6.4</cpu>
-            <ram>568233984</ram>
+            <username>ricardo</username>
+            <cpu>11.3</cpu>
+            <ram>1111429120</ram>
         </process>
         <process>
-            <pid>3847</pid>
+            <pid>1669</pid>
+            <command>pulseaudio</command>
+            <username>ricardo</username>
+            <cpu>11.4</cpu>
+            <ram>11661312</ram>
+        </process>
+        <process>
+            <pid>1953</pid>
             <command>compiz</command>
-            <username>uapv1601663</username>
-            <cpu>5.7</cpu>
-            <ram>228220928</ram>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>147849216</ram>
         </process>
         <process>
-            <pid>1818</pid>
+            <pid>2673</pid>
+            <command>update-manager</command>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>185253888</ram>
+        </process>
+        <process>
+            <pid>10047</pid>
+            <command>LightTable</command>
+            <username>ricardo</username>
+            <cpu>0.0</cpu>
+            <ram>157515776</ram>
+        </process>
+        <process>
+            <pid>1074</pid>
+            <command>mongod</command>
+            <username>mongodb</username>
+            <cpu>0.0</cpu>
+            <ram>66428928</ram>
+        </process>
+        <process>
+            <pid>1346</pid>
             <command>Xorg</command>
             <username>root</username>
-            <cpu>5.5</cpu>
-            <ram>93159424</ram>
-        </process>
-        <process>
-            <pid>4294</pid>
-            <command>LightTable</command>
-            <username>uapv1601663</username>
-            <cpu>2.8</cpu>
-            <ram>135430144</ram>
-        </process>
-        <process>
-            <pid>16435</pid>
-            <command>gnome-system-monitor</command>
-            <username>uapv1601663</username>
-            <cpu>3.7</cpu>
-            <ram>81625088</ram>
-        </process>
-        <process>
-            <pid>4223</pid>
-            <command>LightTable</command>
-            <username>uapv1601663</username>
-            <cpu>0.2</cpu>
-            <ram>98181120</ram>
+            <cpu>0.0</cpu>
+            <ram>75763712</ram>
         </process>
         <process>
             <pid>1</pid>
             <command>init</command>
             <username>root</username>
             <cpu>0.0</cpu>
-            <ram>7061504</ram>
+            <ram>8605696</ram>
         </process>
         <process>
             <pid>2</pid>
             <command>kthreadd</command>
-            <username>root</username>
-            <cpu>0.0</cpu>
-            <ram>0</ram>
-        </process>
-        <process>
-            <pid>3</pid>
-            <command>ksoftirqd/0</command>
-            <username>root</username>
-            <cpu>0.0</cpu>
-            <ram>0</ram>
-        </process>
-        <process>
-            <pid>5</pid>
-            <command>kworker/0:0H</command>
             <username>root</username>
             <cpu>0.0</cpu>
             <ram>0</ram>

@@ -17,8 +17,8 @@ import curses
 import os
 import random
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#from os import sys, path
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets.arraydataobject import ArrayDataObject
 from dbaccess import DBAccess

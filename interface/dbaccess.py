@@ -3,8 +3,8 @@
 
 #############################################################################
 #    DBAccess :                                                             #
-#        Classe pour acceder a la BD.                                       #
-#        Implemente des methodes qui simplifient l'acces                    #
+#        Classe pour acceder à la BD.                                       #
+#        Implémente des méthodes qui simplifient l'accès.                   #
 #                                                                           #
 #############################################################################
 

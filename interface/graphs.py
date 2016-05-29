@@ -3,8 +3,8 @@
 
 #############################################################################
 #    Graphs :                                                               #
-#        Cette classe implémente plusieurs methodes qui permettent la       #
-#        generation des graphiques d'evolution des donnees.                 #
+#        Cette classe implémente plusieurs méthodes qui permettent la       #
+#        génération des graphiques d'évolution des données.                 #
 #                                                                           #
 #############################################################################
 
@@ -27,30 +27,41 @@ def dict_factory(cursor, row):
 
 
 class Graphs:
+    # Les graphes sont stockés dans un dossier temporaire avant
+    # d'être affichés dans le navigateur
+    PATH_HTML = "interface/tmp/chart.html"
+    PATH_SVG = "interface/tmp/chart.svg"
+
+    # Le graphes sont affichés dans le navigateur ayant le nom dans cette constante
+    DEFAULT_BROWSER = "firefox"
+
+
     def __init__(self, dataBaseInstance):
         # Connexion BD
         self.db = dataBaseInstance
 
+
     def date_formatter(self, dt):
         return dt.strftime("%d-%m-%Y %H:%M:%S")
 
-    def create_html(self, chart, fileName):
-        # On crée le fivhier svg qu'on va inclure dans une page HTML
-        fname = 'tmp/chart.svg'
-        chart.render_to_file(fname)
-        f = open(fname, "r")
+    # Fonction qui crée un fichier HTML avec un graphe SVG
+    def create_html(self, chart, title):
+        # On crée le SVG
+        chart.render_to_file(self.PATH_SVG)
+        f = open(self.PATH_SVG, "r")
         content = f.read()
         f.close()
 
         # On crée un page HTML
-        pathHTML = "tmp/chart.html"
-        f = open(pathHTML, "w")
-        f.write("""<html><head><title>""" + fileName + """</title></head><body>
+        f = open(self.PATH_HTML, "w")
+        f.write("""<html><head><title>""" + title + """</title></head><body>
                        <svg width='100%' height='100%'>""" + content + """</svg>
                 </body></html>""")
         f.close()
-        return pathHTML
+        return self.PATH_HTML
 
+
+    # Cette fonction permet l'affichage d'un graphe dans le navigateur ou le stockage en disque
     def save_or_display_chart(self, chart, fileName, browser = True):
         # Pour desactiver la console
         devnull = open(os.devnull, "w")
@@ -58,20 +69,28 @@ class Graphs:
         # Affichage
         if browser:
             html = self.create_html(chart, fileName)
-            subprocess.Popen(["firefox", html], stdout=devnull, stderr=devnull)
+            subprocess.Popen([self.DEFAULT_BROWSER, html], stdout=devnull, stderr=devnull)
         else:
-            chart.render_to_file(self.fileName)
+            chart.render_to_file(fileName)
 
 
+    # Création d'un graphe de type "Line", avec les données recues
     def render_time_chart(self, title, dates=[], linesInfo={}):
         chart = pygal.Line(x_label_rotation=20)
         chart.title = title
-        #chart.x_labels = map(self.date_formatter, dates)
         chart.x_labels = dates
         for label in linesInfo:
             chart.add(label, linesInfo[label])
+
         self.save_or_display_chart(chart, title)
 
+
+
+#############################################################################
+#    Fonctions pour créer différents graphes avec les données en BDD        #
+#############################################################################
+
+    # Évolution du CPU et de la mémoire dans le temps
     def render_cpu_ram_chart(self, server):
         self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat
@@ -85,11 +104,13 @@ class Graphs:
             ram.append(line["ram_used"] * 100 / line["ram_total"])
             swap.append(line["swap_used"] * 100 / line["swap_total"])
 
-        self.fileName = "cpu_ram.svg"
+        # On affiche le graphe
         self.render_time_chart("Utilisation de CPU, RAM et Swap (%)",
                                dates,
                                {"CPU": cpu, "RAM": ram, "Swap": swap})
 
+
+    # Nombre de processus par rapport aux utilisateur connectés
     def render_users_process_chart(self, server):
         self.db.execute("""SELECT date, users_count, processes_count, zombies_count
                                FROM stat
@@ -103,10 +124,12 @@ class Graphs:
             procs.append(line["processes_count"])
             zombies.append(line["zombies_count"])
 
-        self.fileName = "users_procs.svg"
+        # On affiche le graphe
         self.render_time_chart("Nombre d'utilisateurs et processus", dates,
                           {"Utilisateurs": users, "Processus": procs, "Zombies": zombies})
 
+
+    # Évolution de l'utilisation de disque dans le temps
     def render_disks_use_chart(self, server):
         self.db.execute("""SELECT DISTINCT(date)
                                FROM stat
@@ -126,8 +149,6 @@ class Graphs:
                                    WHERE server_name = ? AND mnt = ?""",
                                    [server, disk])
             info = self.db.fetchall()
-            #print disk
-            #print info
 
             infoDisks[disk] = []
 
@@ -137,10 +158,11 @@ class Graphs:
                 else:
                     infoDisks[disk].append(line["used"] * 100 / line["total"])
 
-
-        self.fileName = "disks_use.svg"
+        # On affiche le graphe
         self.render_time_chart("Utilisation des disques (%)", dates, infoDisks)
 
+
+    # Données d'un seul disque
     def render_single_disk_chart(self, dates = []):
         self.db.execute("""SELECT date, cpu_used, ram_used, ram_total, swap_used, swap_total
                                FROM stat

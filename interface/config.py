@@ -15,7 +15,7 @@ from lxml import etree as ET
 #############################################################################
 
 class Config:
-    PATH_CONFIG = "config.xml"
+    PATH_CONFIG = "interface/config.xml"
 
     def __init__(self):
         self.recharger()

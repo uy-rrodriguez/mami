@@ -14,8 +14,8 @@
 import os
 import time
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#from os import sys, path
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from objets.arraydataobject import ArrayDataObject
 from objets.server import Server
@@ -136,7 +136,7 @@ class Crisis:
 
 def main():
     try:
-        print "Démarrage service d'envoie d'alertes. Ctrl+C pour arrêter."
+        print "Démarrage du service d'envoie d'alertes. Ctrl+C pour arrêter."
         c = Crisis()
         c.run()
     except KeyboardInterrupt:

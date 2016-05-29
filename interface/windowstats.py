@@ -10,8 +10,8 @@
 import curses
 import time
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#from os import sys, path
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import util
 from objets.arraydataobject import ArrayDataObject
@@ -24,7 +24,7 @@ from mail import *
 #    WindowStats                                                            #
 #############################################################################
 
-UPDATE_INTERVAL = 2 # sec
+UPDATE_INTERVAL = 30 # sec
 OPTION_LABEL = 0
 OPTION_ACTION = 1
 
@@ -49,13 +49,17 @@ class WindowStats(Window):
         # Gestion des boutons de la fenetre
         self.selected = 0
         self.options = [("Evolution CPU et RAM", self.graphs.render_cpu_ram_chart),
-                        ("Evolution disques", self.graphs.render_disks_use_chart)]
+                        ("Evolution disques", self.graphs.render_disks_use_chart),
+                        ("Processus et utilisateurs", self.graphs.render_users_process_chart)]
 
 
+    # Quand on recoit un message de l'interafce en disant que l'tuilisateur à changé
+    # de serveur, il faut aller chercher les données et les afficher.
     def change_server(self, server):
         self.server = server
         self.update_data()
 
+    # Fonction qui cherche dans la BDD les données associées au serveur sélecctionné
     def update_data(self):
         self.lastDate = self.db.get_last_date(self.server.name).next()[0]
         res = self.db.get_by_fields("stat",
@@ -95,19 +99,24 @@ class WindowStats(Window):
             # On exécute l'action de l'option sélectionnée
             self.options[self.selected][OPTION_ACTION](self.server.name)
 
+    # Cette fonction est appelé à chaque boucle de l'application principale.
+    # On va contrôler le temps qui est passé entre la dernière fois qu'on est
+    # allé chercher les données dans la BDD. Si ce temps est supérieur au temps
+    # de mise à jour configuré, on lit les données.
     def update(self):
         if self.server != None and (time.time() - self.lastUpdate >= UPDATE_INTERVAL):
-            #self.update_data()
+            self.update_data()
 
             self.lastUpdate = time.time()
 
-            self.cpu.used = (self.cpu.used + 0.005) % 100
-            self.ram.used = (self.ram.used + 50) % self.ram.total
-            self.swap.used = (self.swap.used + 20) % self.swap.total
-            self.disks[0].used = (self.disks[0].used + 10) % self.disks[0].total
-            self.disks[1].used = (self.disks[1].used + 5) % self.disks[1].total
+            #self.cpu.used = (self.cpu.used + 0.005) % 100
+            #self.ram.used = (self.ram.used + 50) % self.ram.total
+            #self.swap.used = (self.swap.used + 20) % self.swap.total
+            #self.disks[0].used = (self.disks[0].used + 10) % self.disks[0].total
+            #self.disks[1].used = (self.disks[1].used + 5) % self.disks[1].total
 
 
+    # Affichage des options pour créer des graphes
     def render_options(self):
         title = "Graphiques  "
         y = self.dims[self.Y] - len(self.options) - 1
@@ -120,9 +129,10 @@ class WindowStats(Window):
             color = self.COLOR_NOSELECTED
             if i == self.selected and self.hasFocus:
                 color = self.COLOR_SELECTED
-            self.println("{:25s}".format("[ " + self.options[i][OPTION_LABEL]) + "]", color)
+            self.println("{:30s}".format("[ " + self.options[i][OPTION_LABEL]) + " ]", color)
 
 
+    # Affichage des données
     def render(self):
         self.clear()
         if self.server != None:

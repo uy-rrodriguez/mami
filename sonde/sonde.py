@@ -19,6 +19,7 @@ from datetime import datetime
 import subprocess
 from os import path, sys
 from operator import attrgetter
+
 #from os import sys, path
 #sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
@@ -31,7 +32,7 @@ from objets import cpu, disk, process, ram, server, swap, user, arraydataobject
 #############################################################################
 
 MAX_GREEDY = 10
-SLEEP_TIME = 3
+DELAY = 30
 
 # Path et nom de base pour le fichier à générer, par rapport à l'addresse de
 # ce fichier. Après le nom du fichier on ajoutera un suffix (genre, le nom
@@ -219,6 +220,11 @@ class Sonde(object):
         fOut.write(xml)
         fOut.close()
 
+    def run(self):
+        while True:
+            self.collect()
+            time.sleep(DELAY)
+
 
 
 #############################################################################
@@ -226,10 +232,13 @@ class Sonde(object):
 #############################################################################
 
 def main():
-    s = Sonde()
-    while True:
-        s.collect()
-        time.sleep(SLEEP_TIME)
+    try :
+        print "Démarrage de la sonde. Ctrl+C pour arrêter."
+        s = Sonde()
+        s.run()
+
+    except KeyboardInterrupt:
+        print ""
 
 if __name__=='__main__':
     main()

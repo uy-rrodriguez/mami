@@ -8,8 +8,8 @@
     </crisis>
     <email>
         <address>rr.ricci@gmail.com</address>
-        <template_html>mail_template.html</template_html>
-        <template_txt>mail_template.txt</template_txt>
+        <template_html>interface/mail_template.html</template_html>
+        <template_txt>interface/mail_template.txt</template_txt>
         <subject>Mami vient de detecter une crise</subject>
     </email>
 </configuration>

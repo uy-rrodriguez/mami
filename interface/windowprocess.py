@@ -10,8 +10,8 @@
 import curses
 import time
 
-from os import sys, path
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#from os import sys, path
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import util
 from objets.arraydataobject import ArrayDataObject
@@ -23,18 +23,11 @@ from window import *
 #############################################################################
 
 TAB = "\t\t"
-UPDATE_INTERVAL = 2 # sec
+UPDATE_INTERVAL = 30 # sec
 
 class WindowProcess(Window):
     def __init__(self, parent, stdscr, height, width, y, x, dataBaseInstance):
         super(WindowProcess, self).__init__(parent, stdscr, height, width, y, x)
-#         proc = {"pid": 125,
-#                 "command": "firefox",
-#                 "username": "ricardo",
-#                 "cpu": 2,
-#                 "ram": 250,
-#                 "pram": 12}
-        #self.greedies = [proc for i in range(0, 10)]
 
         self.server = None
         self.greedies = []
@@ -45,12 +38,15 @@ class WindowProcess(Window):
         self.db = dataBaseInstance
 
 
+    # Quand on recoit un message de l'interafce en disant que l'tuilisateur à changé
+    # de serveur, il faut aller chercher les données et les afficher.
     def change_server(self, server):
         self.server = server
         self.update_data()
 
+
+    # Fonction qui cherche dans la BDD les données associées au serveur sélecctionné
     def update_data(self):
-        #print >> sys.stderr, 'update_data'
         self.greedies = []
         req = self.db.get_by_fields("process",
                                     ["server_name"],
@@ -68,26 +64,26 @@ class WindowProcess(Window):
 
         self.lastUpdate = time.time()
 
+
     def handle_key(self, key):
         pass
-        """
-        if key == curses.KEY_DOWN and self.selected < len(self.links) - 1:
-            self.selected += 1
-        elif key == curses.KEY_UP and self.selected > 0:
-            self.selected -= 1
-        elif key == 10 and self.selected >= 0:
-            self.changeMenu = True
-        """
 
+
+    # Cette fonction est appelé à chaque boucle de l'application principale.
+    # On va contrôler le temps qui est passé entre la dernière fois qu'on est
+    # allé chercher les données dans la BDD. Si ce temps est supérieur au temps
+    # de mise à jour configuré, on lit les données.
     def update(self):
         if self.server != None and (time.time() - self.lastUpdate >= UPDATE_INTERVAL):
-            #self.update_data()
+            self.update_data()
             self.lastUpdate = time.time()
 
-            for p in self.greedies:
-                p["cpu"] += 1.0001
-                p["ram"] += 2.0005
+            #for p in self.greedies:
+            #    p["cpu"] += 1.0001
+            #    p["ram"] += 2.0005
 
+
+    # Affichage des données
     def render(self):
         width = self.dims[self.X] - 2*self.minx
         frmt = "{:" + str(width) + "s}"
@@ -108,12 +104,11 @@ class WindowProcess(Window):
 
         i = 0
         for p in self.greedies:
-            self._print(p["pid"]);          self.move(self.posy, listPosX[i]); i+=1;
-            self._print(p["command"]);      self.move(self.posy, listPosX[i]); i+=1;
-            #self._print(p["username"]);     self.move(self.posy, listPosX[i]); i+=1;
+            self._print(p["pid"]);                      self.move(self.posy, listPosX[i]); i+=1;
+            self._print(p["command"]);                  self.move(self.posy, listPosX[i]); i+=1;
             self._print("{:.1f}".format(p["cpu"]));     self.move(self.posy, listPosX[i]); i=0;
-            self._print(util.stringify_bytes(p["ram"]));     #self.move(self.posy, listPosX[i]); i=0;
-            #self._print(str(p["pram"]))
+            self._print(util.stringify_bytes(p["ram"]));
             self.println()
+
             if self.posy > self.screen.getmaxyx()[self.Y]:
                 break
