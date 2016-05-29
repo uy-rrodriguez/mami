@@ -26,7 +26,7 @@ from window import *
 ##########################################################################
 
 TAB = "\t\t"
-UPDATE_INTERVAL = 30 # sec
+UPDATE_INTERVAL = 10 # sec
 
 
 

@@ -29,7 +29,7 @@ from mail import Mail
 #############################################################################
 
 class Crisis:
-    DELAY = 30
+    DELAY = 10
 
     def __init__(self):
         # Connexion a la BD
@@ -57,11 +57,11 @@ class Crisis:
 
                     # Obtention des stats
                     res = self.db.get_by_fields("stat",
-                                                ["server_name", "date"],
+                                                ["server_name", "timestamp"],
                                                 [server.name, lastDate]).next()
 
                     resDisks = self.db.get_by_fields("statDisk",
-                                                     ["server_name", "date"],
+                                                     ["server_name", "timestamp"],
                                                      [server.name, lastDate])
 
                     # Création d'objets à partir des données

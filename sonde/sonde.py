@@ -33,7 +33,7 @@ from requester import Requeteur
 #############################################################################
 
 MAX_GREEDY = 10
-DELAY = 5
+DELAY = 10
 
 # Path et nom de base pour le fichier à générer, par rapport à l'addresse de
 # ce fichier. Après le nom du fichier on ajoutera un suffix (genre, le nom
@@ -226,14 +226,18 @@ class Sonde(object):
 
         # Envoie du fichier XML à travers HTTP au webservice. L'adresse du webservice est configuré
         # dans la classe Requeteur.
-        #n = Requeteur()
-        #n.post_xml(outXML)
+        n = Requeteur()
+        n.post_xml(outXML)
 
 
     def run(self):
         while True:
-            self.collect()
-            time.sleep(DELAY)
+            try :
+                self.collect()
+                time.sleep(DELAY)
+
+            except Exception, e:
+                print "Sonde : ", e
 
 
 
@@ -243,7 +247,7 @@ class Sonde(object):
 
 def main():
     try :
-        print "Démarrage de la sonde. Ctrl+C pour arrêter."
+        print "Sonde : Démarrage du service. Ctrl+C pour arrêter."
         s = Sonde()
         s.run()
 

@@ -49,8 +49,13 @@ class Webservice:
 #############################################################################
 
 def main():
-    w=Webservice()
-    w.app.run()
+    try:
+        w=Webservice()
+        w.app.run()
+
+    except Exception, e:
+        print "Webservice : ", e
+
 
 if __name__=='__main__':
     main()

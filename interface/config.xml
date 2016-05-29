@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <crisis>
-        <max_cpu>10</max_cpu>
+        <max_cpu>5</max_cpu>
         <max_ram>75</max_ram>
         <max_swap>80</max_swap>
         <max_disk>80</max_disk>

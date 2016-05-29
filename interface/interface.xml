@@ -8,7 +8,7 @@ Vous pouvez connaitre l'etat des postes actualise a chaque minute, ainsi que gen
         </text>
         <links>
             <win_servers>Liste de serveurs</win_servers>
-            <win_config_db>Gestion de la BDD</win_config_db>
+            <win_db>Gestion de la BDD</win_db>
             <win_crises>Gestion de crises</win_crises>
             <win_emails>Gestion de mailing</win_emails>
         </links>
@@ -21,7 +21,7 @@ Voici la liste de tous les serveurs existants dans la base de donnees.
 Veuillez bien selectionner un pour afficher les stats.
             </text>
         </win_servers>
-        <win_crises>
+        <win_db>
             <title>Gestion de la BDD</title>
             <text>
 Vous pouvez configurer certains parametres concernant le stockage des donnees.
@@ -30,7 +30,7 @@ Vous pouvez configurer certains parametres concernant le stockage des donnees.
                 <win_config_db>Modifier la taille de l'historique</win_config_db>
                 <main>Retour accueil</main>
             </links>
-        </win_crises>
+        </win_db>
         <win_crises>
             <title>Gestion de crises</title>
             <text>

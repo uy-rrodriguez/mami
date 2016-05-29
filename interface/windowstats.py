@@ -24,7 +24,7 @@ from mail import *
 #    WindowStats                                                            #
 #############################################################################
 
-UPDATE_INTERVAL = 5 # sec
+UPDATE_INTERVAL = 10 # sec
 OPTION_LABEL = 0
 OPTION_ACTION = 1
 

@@ -25,7 +25,7 @@ from interface.config import Config
 #    Constantes.                                                            #
 #############################################################################
 
-DELAY = 5
+DELAY = 10
 FILES_PATTERN = "data/data_*.xml"
 PATH = "data/sonde_info.db"
 
@@ -63,22 +63,24 @@ class Stockage:
         self.swap.used = tree.xpath("/data/swap/used/text()")[0]
         self.swap.total = tree.xpath("/data/swap/total/text()")[0]
 
-        for disk in tree.xpath("/data/disks"):
-            disk.get("mnt")
-            disk.get("total")
-            disk.get("used")
+        for disk_info in tree.xpath("/data/disks/disk"):
+            d = disk.Disk()
+            d.mnt = disk_info.find("mnt").text
+            d.total = disk_info.find("total").text
+            d.used = disk_info.find("used").text
+            self.disks.append(d)
 
         #self.swap.used = tree.xpath("/data/swap/used/text()")[0]
         #self.swap.total = tree.xpath("/data/swap/total/text()")[0]
 
-        for user_info in tree.xpath("/data/users"):
+        for user_info in tree.xpath("/data/users/user"):
             u = user.User()
-            u.name = user_info.get("name")
-            u.uid = user_info.get("uid")
-            u.gid = user_info.get("gid")
-            u.isroot = user_info.get("isroot")
-            u.gname = user_info.get("gname")
-            u.login_time = user_info.get("login_time")
+            u.name = user_info.find("name").text
+            u.uid = user_info.find("uid").text
+            #u.gid = user_info.find("gid").text
+            u.isroot = user_info.find("isroot").text
+            #u.gname = user_info.find("gname").text
+            u.login_time = user_info.find("login_time").text
             self.users.append(u)
             self.count_u += 1
 
@@ -86,13 +88,14 @@ class Stockage:
         self.count_z = tree.xpath("/data/processes/zombies/text()")[0]
 
 
-        for process_info in tree.xpath("/data/processes/greedy"):
+        for process_info in tree.xpath("/data/processes/process"):
             p = process.Process()
-            p = process_info.get("pid")
-            p = process_info.get("cpu")
-            p = process_info.get("ram")
-            p = process_info.get("command")
-            self.process.append(p)
+            p.pid = process_info.find("pid").text
+            p.cpu = process_info.find("cpu").text
+            p.ram = process_info.find("ram").text
+            p.command = process_info.find("command").text
+            p.username = process_info.find("username").text
+            self.processes.append(p)
 
 
     def stockage_bdd(self):
@@ -145,7 +148,20 @@ class Stockage:
                    str(self.count_u),
                    now))
 
-        #c.executescript("""""")
+
+        for d in self.disks:
+            c.execute("""INSERT INTO statDisk (server_name,
+                                                mnt,
+                                                used,
+                                                total,
+                                                timestamp)
+                          VALUES (?, ?, ?, ?, ?)""",
+                      (str(self.server.name),
+                       str(d.mnt),
+                       str(d.used),
+                       str(d.total),
+                       now))
+
 
         pickleusers = sqlite3.Binary(pickle.dumps(self.users, pickle.HIGHEST_PROTOCOL))
 
@@ -201,23 +217,27 @@ class Stockage:
 
 def main():
     try :
-        print "Démarrage du service de stockage. Ctrl+C pour arrêter."
+        print "Stockage : Démarrage du service. Ctrl+C pour arrêter."
         while True:
-            # On parcourt les fichiers télechargés, en cherchant par le
-            # modèle de nom qu'ils doivent avoir.
-            for f in glob.glob(FILES_PATTERN):
-                print "Traitement du fichier " + f
-                s = Stockage()
-                s.parse_xml(f)
-                s.stockage_bdd()
-                os.remove(f)
+            try:
+                # On parcourt les fichiers télechargés, en cherchant par le
+                # modèle de nom qu'ils doivent avoir.
+                for f in glob.glob(FILES_PATTERN):
+                    print "Stockage : Traitement du fichier " + f
+                    s = Stockage()
+                    s.parse_xml(f)
+                    s.stockage_bdd()
+                    os.remove(f)
 
-                # On vérifie la quantité d'enregistrements dans la table et on
-                # supprime les plus anciens
-                s.nettoyage_bdd()
+                    # On vérifie la quantité d'enregistrements dans la table et on
+                    # supprime les plus anciens
+                    s.nettoyage_bdd()
 
-            # Puis on attend quelques secondes
-            time.sleep(DELAY)
+                # Puis on attend quelques secondes
+                time.sleep(DELAY)
+
+            except Exception, e:
+                print "Stockage : ", e
 
     except KeyboardInterrupt:
         print ""
