@@ -33,7 +33,7 @@ from requester import Requeteur
 #############################################################################
 
 MAX_GREEDY = 10
-DELAY = 10
+DELAY = 10 # seconds
 
 # Path et nom de base pour le fichier à générer, par rapport à l'addresse de
 # ce fichier. Après le nom du fichier on ajoutera un suffix (genre, le nom
