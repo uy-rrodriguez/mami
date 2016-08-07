@@ -22,7 +22,7 @@ class Mail:
     HOST = "smtp.gmail.com"
     PORT = "587"
     FROM = "uyric.gm@gmail.com"
-    PWD = "uyric9090"
+    PWD = ""
 
     def __init__(self):
         self.smtp = smtplib.SMTP(self.HOST, self.PORT)
