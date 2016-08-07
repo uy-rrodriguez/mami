@@ -7,7 +7,7 @@
         <max_disk>80</max_disk>
     </crisis>
     <email>
-        <address>rr.ricci@gmail.com</address>
+        <address>editer_adresse_mail</address>
         <template_html>interface/mail_template.html</template_html>
         <template_txt>interface/mail_template.txt</template_txt>
         <subject>Mami vient de detecter une crise</subject>
